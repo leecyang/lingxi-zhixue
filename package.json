@@ -10,6 +10,11 @@
     "preview": "vite preview",
     "deploy": "gh-pages -d dist -r https://github.com/leecyang/lingxi-zhixue-v2.git"
   },
+  "pnpm": {
+    "overrides": {
+      "three-bmfont-text": "github:dmarcos/three-bmfont-text"
+    }
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-accordion": "^1.2.10",
