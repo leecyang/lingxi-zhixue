@@ -38,7 +38,7 @@ import {
   Loader
 } from 'lucide-react'
 import { initScrollProgress } from './scrollProgress'
-import './App.css'
+import './app.css'
 
 // 智能体数据 - 使用用户提供的具体名称
 const agentMatrix = {
