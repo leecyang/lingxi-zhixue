@@ -149,7 +149,7 @@
     0 0 20px rgba(0, 255, 136, 0.5),
     0 0 35px rgba(0, 255, 136, 0.3),
     0 0 40px rgba(0, 255, 136, 0.2);
-  animation: neon-flicker 4s ease-in-out infinite alternate;
+  animation: neon-flicker 4s ease-in-out infinite;
   position: relative;
   display: inline-block;
   font-display: swap;
@@ -309,13 +309,29 @@
 
 /* 主标题样式 - 灵犀智学 */
 .main-title {
-  color: #ffffff;
-  text-shadow: 
-    0 0 20px rgba(255, 255, 255, 0.8),
-    0 0 40px rgba(0, 255, 136, 0.6),
-    0 0 60px rgba(0, 255, 136, 0.4),
-    0 0 80px rgba(0, 255, 136, 0.2);
-  animation: float-glow 3s ease-in-out infinite;
+  font-size: 8rem;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(to right, #00ff88, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+
+/* 平板和手机上的标题大小调整 */
+@media (max-width: 1024px) {
+  .main-title {
+    font-size: 6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 4rem;
+  }
 }
 
 @keyframes float-glow {
@@ -593,6 +609,10 @@
     0 0 30px rgba(168, 85, 247, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
+
+
+
+
 
 @keyframes gradient-border {
   0%, 100% {
@@ -894,6 +914,22 @@
   .glass-card:hover {
     transform: translateY(-2px) scale(1.01);
   }
+  
+  .developing-card-fixed {
+    display: none; /* 在手机上隐藏开发中卡片 */
+  }
+  
+  .agent-container-inner {
+    gap: 1rem; /* 减少间距 */
+  }
+  
+  .scroll-progress-container {
+    right: 1.5rem; /* 移除为右侧卡片预留的空间 */
+  }
+  
+  .main-title {
+    font-size: 4rem !important; /* 手机上进一步减小标题字体 */
+  }
 }
 
 @media (max-width: 480px) {
@@ -905,6 +941,31 @@
   .neon-text {
     font-size: 2rem;
   }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .developing-card-fixed {
+    width: 280px; /* 在平板上稍微减小宽度 */
+  }
+  
+  .scroll-progress-container {
+    right: calc(280px + 2.5rem); /* 调整进度条位置 */
+  }
+  
+  .main-title {
+    font-size: 6rem !important; /* 平板上适中的标题字体 */
+  }
+}
+
+/* 动画定义 */
+@keyframes track-shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes thumb-shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
 
 /* 增强的自定义滚动条 */
@@ -926,6 +987,75 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #00d4ff, #ff0080);
   box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
+}
+
+/* 右侧固定开发中卡片 */
+.developing-card-fixed {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+/* 滚动进度条容器 */
+.scroll-progress-container {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 1.5rem;
+  right: calc(320px + 3rem); /* 为右侧卡片留出空间 */
+  height: 4px;
+  z-index: 3;
+}
+
+.scroll-progress-track {
+  width: 100%;
+  height: 100%;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-progress-track::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(59, 130, 246, 0.3), 
+    transparent);
+  animation: track-shine 3s ease-in-out infinite;
+}
+
+.scroll-progress-thumb {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 2px;
+  width: 30%;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.scroll-progress-thumb:hover {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+  transform: scaleY(1.5);
+}
+
+.scroll-progress-thumb::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.4), 
+    transparent);
+  animation: thumb-shine 2s ease-in-out infinite;
 }
 
 /* 增强的加载动画 */
@@ -1540,226 +1670,354 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-/* 右侧固定开发中卡片 */
-.developing-card-fixed {
-  width: 320px;
-  flex-shrink: 0;
+
+
+
+
+@keyframes gradient-border {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
-/* 滚动进度条容器 */
-.scroll-progress-container {
-  position: absolute;
-  bottom: 0.75rem;
-  left: 1.5rem;
-  right: calc(320px + 3rem); /* 为右侧卡片留出空间 */
-  height: 4px;
-  z-index: 3;
-}
-
-.scroll-progress-track {
-  width: 100%;
-  height: 100%;
-  background: rgba(59, 130, 246, 0.2);
-  border-radius: 2px;
+.cyber-button {
   position: relative;
+  background: linear-gradient(135deg, #00ff88, #00d4ff);
+  border: none;
+  color: #000000;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   overflow: hidden;
-}
-
-.scroll-progress-track::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(59, 130, 246, 0.3), 
-    transparent);
-  animation: track-shine 3s ease-in-out infinite;
-}
-
-.scroll-progress-thumb {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  border-radius: 2px;
-  width: 30%;
-  position: relative;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-}
-
-.scroll-progress-thumb:hover {
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
-  transform: scaleY(1.5);
-}
-
-.scroll-progress-thumb::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.4), 
-    transparent);
-  animation: thumb-shine 2s ease-in-out infinite;
-}
-
-/* 开发中智能体卡片样式 */
-.developing-card {
-  position: relative;
-  background: linear-gradient(135deg, 
-    rgba(15, 23, 42, 0.95) 0%, 
-    rgba(30, 41, 59, 0.9) 50%, 
-    rgba(15, 23, 42, 0.95) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 
-    0 0 20px rgba(59, 130, 246, 0.1),
-    0 0 40px rgba(59, 130, 246, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  height: 350px;
+    0 4px 15px rgba(0, 255, 136, 0.3),
+    0 0 0 1px rgba(0, 255, 136, 0.2);
 }
 
-.developing-card::before {
+.cyber-button::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(59, 130, 246, 0.1), 
-    transparent);
-  animation: developing-scan 3s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
 }
 
-.developing-card::after {
+.cyber-button::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00ff88, #00d4ff, #ff6b6b, #ffd93d);
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  animation: gradient-border 3s ease infinite;
+  transition: opacity 0.4s ease;
+}
+
+.cyber-button:hover::before {
+  left: 100%;
+}
+
+.cyber-button:hover::after {
+  opacity: 1;
+}
+
+.cyber-button:hover {
+  background: linear-gradient(135deg, #00ff88, #00d4ff);
+  box-shadow: 
+    0 0 30px rgba(0, 255, 136, 0.8),
+    0 0 60px rgba(0, 255, 136, 0.6),
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px) scale(1.08);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.cyber-button:active {
+  transform: translateY(-1px) scale(1.04);
+  transition: all 0.1s ease;
+}
+
+@keyframes gradient-border {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.floating-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #00ff88;
+  border-radius: 50%;
+  animation: float 8s infinite linear;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.particle:nth-child(2n) {
+  background: #ff0080;
+  animation-duration: 10s;
+  width: 2px;
+  height: 2px;
+}
+
+.particle:nth-child(3n) {
+  background: #00d4ff;
+  animation-duration: 12s;
+  width: 4px;
+  height: 4px;
+}
+
+.particle:nth-child(4n) {
+  background: #8b5cf6;
+  animation-duration: 9s;
+  width: 2.5px;
+  height: 2.5px;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.terminal-window {
+  background: #000000;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 255, 136, 0.2);
+}
+
+.terminal-header {
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 4px currentColor;
+}
+
+.terminal-dot.red { background: #ff5f56; }
+.terminal-dot.yellow { background: #ffbd2e; }
+.terminal-dot.green { background: #27ca3f; }
+
+.terminal-content {
+  padding: 1rem;
+  min-height: 200px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #00ff88;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 20px,
+      rgba(0, 255, 136, 0.02) 20px,
+      rgba(0, 255, 136, 0.02) 21px
+    );
+}
+
+.ar-demo-frame {
+  background: linear-gradient(135deg, #0a0a0f, #1a1a2e);
+  border: 2px solid;
+  border-image: linear-gradient(135deg, #00ff88, #00d4ff, #ff0080) 1;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 255, 136, 0.2);
+}
+
+.ar-demo-frame::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, 
-    transparent 30%, 
-    rgba(59, 130, 246, 0.03) 50%, 
-    transparent 70%);
-  animation: developing-shimmer 4s ease-in-out infinite;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 136, 0.03) 2px,
+      rgba(0, 255, 136, 0.03) 4px
+    );
+  pointer-events: none;
 }
 
-.developing-card > * {
+.section-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ff88, #00d4ff, #ff0080, #8b5cf6, transparent);
+  margin: 4rem 0;
   position: relative;
-  z-index: 3;
-}
-
-.developing-icon {
-  position: relative;
-  z-index: 2;
-  animation: developing-pulse 2s ease-in-out infinite;
   overflow: hidden;
 }
 
-.developing-icon::before {
+.section-divider::before {
   content: '';
   position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: divider-flow 3s ease-in-out infinite;
+}
+
+@keyframes divider-flow {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(0, 255, 136, 0.8);
+  }
+}
+
+.scroll-indicator {
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at center,
-    rgba(0, 255, 136, 0.2) 0%,
-    transparent 70%
-  );
-  animation: developing-pulse 2s ease-in-out infinite;
-}
-
-.developing-title {
-  position: relative;
-  z-index: 2;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: developing-text-flow 3s ease-in-out infinite;
-}
-
-.developing-progress {
-  position: relative;
-  overflow: hidden;
-  animation: progress-shine 2s ease-in-out infinite;
-}
-
-.developing-progress::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
   width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  animation: progress-shine 1.5s ease-in-out infinite;
+  height: 4px;
+  background: linear-gradient(90deg, #00ff88, #00d4ff, #ff0080, #8b5cf6);
+  background-size: 300% 100%;
+  transform-origin: left;
+  z-index: 1000;
+  animation: gradient-flow 3s ease-in-out infinite;
 }
 
-.developing-progress::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.3), 
-    transparent);
-  animation: progress-shine 2s ease-in-out infinite;
+@keyframes gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
-.developing-badge {
-  position: relative;
-  overflow: hidden;
-  animation: badge-glow 2s ease-in-out infinite alternate;
+/* 增强的响应式设计 */
+@media (max-width: 768px) {
+  .matrix-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 280px));
+    gap: 1.5rem;
+    justify-content: center;
+    justify-items: center;
+  }
+  
+  .hero-section {
+    padding: 2rem 1rem;
+  }
+  
+  .neon-text {
+    font-size: 2.5rem;
+  }
+  
+  .glass-card:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
+  
+  .developing-card-fixed {
+    display: none; /* 在手机上隐藏开发中卡片 */
+  }
+  
+  .agent-container-inner {
+    gap: 1rem; /* 减少间距 */
+  }
+  
+  .scroll-progress-container {
+    right: 1.5rem; /* 移除为右侧卡片预留的空间 */
+  }
+  
+  .main-title {
+    font-size: 4rem !important; /* 手机上进一步减小标题字体 */
+  }
 }
 
-.developing-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 255, 136, 0.2),
-    transparent
-  );
-  animation: badge-sweep 3s ease-in-out infinite;
+@media (max-width: 480px) {
+  .matrix-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
+    gap: 1rem;
+  }
+  
+  .neon-text {
+    font-size: 2rem;
+  }
 }
 
-/* 慢速旋转动画 */
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
+@media (max-width: 1024px) and (min-width: 769px) {
+  .developing-card-fixed {
+    width: 280px; /* 在平板上稍微减小宽度 */
+  }
+  
+  .scroll-progress-container {
+    right: calc(280px + 2.5rem); /* 调整进度条位置 */
+  }
+  
+  .main-title {
+    font-size: 6rem !important; /* 平板上适中的标题字体 */
+  }
 }
 
 /* 动画定义 */
-@keyframes container-scan {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
 @keyframes track-shine {
   0% { left: -100%; }
   100% { left: 100%; }
@@ -1770,99 +2028,16 @@
   100% { left: 100%; }
 }
 
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* 增强的自定义滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-@keyframes developing-scan {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
+::-webkit-scrollbar-track {
+  background: #1a1a2e;
+  border-radius: 5px;
 }
 
-@keyframes developing-shimmer {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
-}
-
-@keyframes developing-pulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
-}
-
-@keyframes developing-text-flow {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes progress-shine {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-@keyframes badge-glow {
-  0% {
-    box-shadow: 0 0 5px rgba(0, 255, 136, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
-  }
-}
-
-@keyframes badge-sweep {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-/* 禁用复制样式 */
-* {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* 禁用右键菜单 */
-body {
-  -webkit-context-menu: none;
-  -moz-context-menu: none;
-  context-menu: none;
-}
-
-/* 禁用文本选择 */
-::selection {
-  background: transparent;
-}
-
-::-moz-selection {
-  background: transparent;
-}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #00ff88, #00d4ff);
 

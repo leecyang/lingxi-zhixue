@@ -38,7 +38,7 @@ import {
   Loader
 } from 'lucide-react'
 import { initScrollProgress } from './scrollProgress'
-import './app.css'
+import './App.css'
 
 // 智能体数据 - 使用用户提供的具体名称
 const agentMatrix = {
@@ -362,7 +362,7 @@ function App() {
       <section className="hero-section min-h-screen flex items-center justify-center relative">
         <div className="container mx-auto px-4 text-center z-10">
           <div className="space-y-8">
-            <h1 className="text-[8rem] md:text-[16rem] font-bold neon-text main-title floating-element">
+            <h1 className="font-bold neon-text main-title floating-element">
                  灵犀智学
                </h1>
             <div className="search-box-container max-w-2xl mx-auto">
