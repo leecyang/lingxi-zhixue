@@ -5,8 +5,8 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/lingxi-zhixue-v2/', // For GitHub Pages deployment
-  plugins: [react(), tailwindcss()], // Ensure tailwindcss is correctly invoked
+  plugins: [react(),tailwindcss()],
+  base: '/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
