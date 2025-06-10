@@ -1,6 +1,52 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* 强制Coze聊天组件使用白色主题 */
+[data-coze-chat-client] {
+  background-color: white !important;
+  color: black !important;
+}
+
+[data-coze-chat-client] * {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Coze聊天iframe样式覆盖 */
+iframe[src*="coze"] {
+  filter: invert(0) !important;
+}
+
+/* 强制Coze WebSDK聊天窗口为白色主题 */
+.coze-chat-container,
+.coze-webchat-container,
+[class*="coze"][class*="chat"],
+[id*="coze"][id*="chat"] {
+  background-color: white !important;
+  color: black !important;
+}
+
+.coze-chat-container *,
+.coze-webchat-container *,
+[class*="coze"][class*="chat"] *,
+[id*="coze"][id*="chat"] * {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+/* 消息气泡样式 */
+.coze-chat-container .message,
+.coze-webchat-container .message {
+  background-color: #f5f5f5 !important;
+  color: black !important;
+}
+
+.coze-chat-container .message.user,
+.coze-webchat-container .message.user {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -234,14 +280,7 @@
   }
 }
 
-.search-box-container:hover {
-  border-color: rgba(0, 255, 136, 0.6);
-  box-shadow: 
-    0 6px 25px rgba(0, 0, 0, 0.4),
-    0 0 30px rgba(0, 255, 136, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
+/* 搜索框悬停效果已移除 */
 
 .tech-green-text {
   color: #00ff88;
@@ -312,14 +351,115 @@
   font-size: 8rem;
   line-height: 1;
   margin-bottom: 1.5rem;
-  background: linear-gradient(to right, #00ff88, #00d4ff);
+  background: linear-gradient(45deg, #00ff88, #00d4ff, #ff6b6b, #4ecdc4, #45b7d1);
+  background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
   display: inline-block;
   z-index: 1;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+  animation: titleGradientShift 4s ease-in-out infinite, titlePulse 2s ease-in-out infinite alternate, titleFloat 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
+
+/* 标题渐变动画 */
+@keyframes titleGradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 标题脉冲动画 */
+@keyframes titlePulse {
+  0% {
+    transform: scale(1) rotateX(0deg);
+    filter: brightness(1) drop-shadow(0 0 20px rgba(0, 255, 136, 0.3));
+  }
+  100% {
+    transform: scale(1.05) rotateX(5deg);
+    filter: brightness(1.2) drop-shadow(0 0 40px rgba(0, 255, 136, 0.6));
+  }
+}
+
+/* 标题浮动动画 */
+@keyframes titleFloat {
+  0%, 100% {
+    transform: translateY(0px) rotateY(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotateY(2deg);
+  }
+  66% {
+    transform: translateY(5px) rotateY(-1deg);
+  }
+}
+
+/* 标题光环效果 */
+.main-title::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: conic-gradient(from 0deg, transparent, rgba(0, 255, 136, 0.3), transparent, rgba(0, 212, 255, 0.3), transparent);
+  border-radius: 20px;
+  z-index: -1;
+  animation: titleHaloRotate 8s linear infinite;
+  filter: blur(10px);
+}
+
+/* 光环旋转动画 */
+@keyframes titleHaloRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 标题粒子效果 */
+.main-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, rgba(0, 255, 136, 0.8), transparent),
+    radial-gradient(2px 2px at 40% 70%, rgba(0, 212, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 60% 20%, rgba(255, 107, 107, 0.8), transparent),
+    radial-gradient(1px 1px at 80% 80%, rgba(78, 205, 196, 0.8), transparent),
+    radial-gradient(2px 2px at 90% 40%, rgba(69, 183, 209, 0.8), transparent);
+  background-size: 100% 100%;
+  animation: titleParticles 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 粒子动画 */
+@keyframes titleParticles {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* 鼠标悬停效果已移除 */
 
 /* 平板和手机上的标题大小调整 */
 @media (max-width: 1024px) {
@@ -331,6 +471,42 @@
 @media (max-width: 768px) {
   .main-title {
     font-size: 4rem;
+  }
+  
+  /* 聊天提示框在平板和手机端的样式优化 */
+  .chat-tip-container {
+    min-width: 320px !important;
+    max-width: calc(100vw - 48px) !important;
+    padding: 16px 20px !important;
+  }
+  
+  /* 智能体标题字体大小调整 */
+  .chat-tip-container h3 {
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* 类别名称字体大小调整 */
+  .chat-tip-container p {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* 启动成功提示字体大小调整 */
+  .chat-tip-container span {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* 智能体图标大小调整 */
+  .chat-tip-container .w-12.h-12 {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .chat-tip-container .h-6.w-6 {
+    width: 20px !important;
+    height: 20px !important;
   }
 }
 
@@ -689,6 +865,202 @@
   transition: all 0.1s ease;
 }
 
+/* 项目介绍按钮样式 - Cyberpunk风格 */
+.project-intro-button {
+  position: relative;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  border: none;
+  color: #000000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 
+    0 0 30px rgba(0, 245, 255, 0.3),
+    inset 0 0 30px rgba(0, 245, 255, 0.1),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+  animation: dark-pulse 3s ease-in-out infinite;
+}
+
+/* 按钮内部光效 */
+.project-intro-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 245, 255, 0.6), 
+    rgba(255, 20, 147, 0.4), 
+    transparent
+  );
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+/* 按钮边框光效 */
+.project-intro-button::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, 
+    #00f5ff 0%, 
+    #ff1493 25%, 
+    #00ff41 50%, 
+    #ff1493 75%, 
+    #00f5ff 100%
+  );
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: cyberpunk-border 4s ease-in-out infinite;
+  filter: blur(1px);
+}
+
+@keyframes cyberpunk-border {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: blur(1px) brightness(1) hue-rotate(0deg);
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+  }
+  25% {
+    background-position: 100% 0%;
+    filter: blur(2px) brightness(1.2) hue-rotate(90deg);
+    box-shadow: 0 0 30px rgba(255, 20, 147, 0.4);
+  }
+  50% {
+    background-position: 100% 100%;
+    filter: blur(1px) brightness(1.5) hue-rotate(180deg);
+    box-shadow: 0 0 40px rgba(0, 255, 65, 0.5);
+  }
+  75% {
+    background-position: 0% 100%;
+    filter: blur(2px) brightness(1.2) hue-rotate(270deg);
+    box-shadow: 0 0 35px rgba(255, 255, 0, 0.4);
+  }
+}
+
+/* 悬停效果 */
+.project-intro-button:hover {
+  color: #000000;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  box-shadow: 
+    0 0 50px rgba(0, 245, 255, 0.6),
+    inset 0 0 50px rgba(0, 245, 255, 0.2),
+    0 8px 25px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  text-shadow: 
+    0 0 15px rgba(0, 245, 255, 1),
+    0 0 30px rgba(255, 20, 147, 0.8);
+}
+
+.project-intro-button:hover::before {
+  left: 100%;
+}
+
+.project-intro-button:hover::after {
+  animation-duration: 2s;
+  filter: blur(0px) brightness(1.8);
+}
+
+/* 激活效果 */
+.project-intro-button:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 
+    0 0 30px rgba(0, 245, 255, 0.8),
+    inset 0 0 40px rgba(0, 245, 255, 0.3),
+    0 2px 10px rgba(0, 0, 0, 0.5);
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* 故障效果动画 */
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0) scale(0.98);
+    filter: hue-rotate(0deg) contrast(1);
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+  }
+  10% {
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: hue-rotate(90deg) contrast(1.2);
+    text-shadow: 2px 0 0 rgba(255, 0, 0, 0.8), -2px 0 0 rgba(0, 255, 255, 0.8);
+  }
+  20% {
+    transform: translate(2px, -2px) scale(0.98);
+    filter: hue-rotate(180deg) contrast(0.8);
+    text-shadow: 0 2px 0 rgba(255, 0, 255, 0.8), 0 -2px 0 rgba(0, 255, 0, 0.8);
+  }
+  30% {
+    transform: translate(-2px, -2px) scale(0.98);
+    filter: hue-rotate(270deg) contrast(1.5);
+    text-shadow: -1px -1px 0 rgba(255, 255, 0, 0.8), 1px 1px 0 rgba(255, 0, 255, 0.8);
+  }
+  40% {
+    transform: translate(2px, 2px) scale(0.98);
+    filter: hue-rotate(45deg) contrast(1.1);
+    text-shadow: 1px 0 0 rgba(0, 255, 255, 0.8), -1px 0 0 rgba(255, 255, 0, 0.8);
+  }
+  50% {
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: hue-rotate(135deg) contrast(1.3);
+    text-shadow: 0 0 15px rgba(255, 0, 128, 0.9), 0 0 30px rgba(0, 255, 255, 0.6);
+  }
+  60% {
+    transform: translate(2px, -2px) scale(0.98);
+    filter: hue-rotate(225deg) contrast(0.9);
+    text-shadow: 1px -1px 0 rgba(0, 255, 0, 0.8), -1px 1px 0 rgba(255, 0, 0, 0.8);
+  }
+  70% {
+    transform: translate(-2px, -2px) scale(0.98);
+    filter: hue-rotate(315deg) contrast(1.4);
+    text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.9), 1px 1px 0 rgba(0, 0, 255, 0.8);
+  }
+  80% {
+    transform: translate(2px, 2px) scale(0.98);
+    filter: hue-rotate(45deg) contrast(1.1);
+    text-shadow: 1px 1px 0 rgba(255, 128, 0, 0.8), -1px -1px 0 rgba(128, 255, 0, 0.8);
+  }
+  90% {
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: hue-rotate(0deg) contrast(1);
+    text-shadow: 0 0 5px rgba(0, 245, 255, 0.8);
+  }
+}
+
+/* 暗黑脉冲动画 */
+@keyframes dark-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 30px rgba(0, 245, 255, 0.3),
+      inset 0 0 30px rgba(0, 245, 255, 0.1),
+      0 4px 15px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+  }
+  33% {
+    box-shadow: 
+      0 0 40px rgba(255, 20, 147, 0.4),
+      inset 0 0 40px rgba(255, 20, 147, 0.15),
+      0 6px 20px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 0 15px rgba(255, 20, 147, 0.9);
+  }
+  66% {
+    box-shadow: 
+      0 0 35px rgba(0, 255, 65, 0.35),
+      inset 0 0 35px rgba(0, 255, 65, 0.12),
+      0 5px 18px rgba(0, 0, 0, 0.35);
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.85);
+  }
+}
+
 @keyframes gradient-border {
   0%, 100% {
     background-position: 0% 50%;
@@ -897,7 +1269,7 @@
 /* 增强的响应式设计 */
 @media (max-width: 768px) {
   .matrix-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 280px));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 220px));
     gap: 1.5rem;
     justify-content: center;
     justify-items: center;
@@ -913,6 +1285,10 @@
   
   .glass-card:hover {
     transform: translateY(-2px) scale(1.01);
+  }
+  
+  .developing-card-container {
+    display: none; /* 在手机上隐藏开发中卡片 */
   }
   
   .developing-card-fixed {
@@ -934,7 +1310,7 @@
 
 @media (max-width: 480px) {
   .matrix-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
     gap: 1rem;
   }
   
@@ -957,15 +1333,67 @@
     border-right: none; /* 移除打字机光标效果 */
     animation: none; /* 禁用打字机动画 */
   }
+  
+  /* 聊天提示框在手机端的样式优化 */
+  .chat-tip-container {
+    min-width: 280px !important;
+    max-width: calc(100vw - 32px) !important;
+    padding: 12px 16px !important;
+  }
+  
+  /* 智能体标题字体大小调整 */
+  .chat-tip-container h3 {
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 类别名称字体大小调整 */
+  .chat-tip-container p {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 启动成功提示字体大小调整 */
+  .chat-tip-container span {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 智能体图标大小调整 */
+  .chat-tip-container .w-12.h-12 {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .chat-tip-container .h-6.w-6 {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  /* 状态指示器大小调整 */
+  .chat-tip-container .w-4.h-4 {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  /* 动画指示器大小调整 */
+  .chat-tip-container .w-2.h-2 {
+    width: 6px !important;
+    height: 6px !important;
+  }
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
+  .developing-card-container {
+    width: 160px; /* 在平板上减小宽度 */
+  }
+  
   .developing-card-fixed {
-    width: 280px; /* 在平板上稍微减小宽度 */
+    width: 160px; /* 在平板上减小宽度 */
   }
   
   .scroll-progress-container {
-    right: calc(280px + 2.5rem); /* 调整进度条位置 */
+    right: 1.5rem; /* 扩展到容器右边缘 */
   }
   
   .main-title {
@@ -982,6 +1410,1158 @@
 @keyframes thumb-shine {
   0% { left: -100%; }
   100% { left: 100%; }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToTop {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+  }
+}
+
+/* Coze平台推荐组件样式 */
+.coze-recommendation-section {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 32px auto 0 auto;
+}
+
+.coze-recommendation-card {
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.98) 0%, 
+    rgba(26, 26, 46, 0.95) 30%,
+    rgba(20, 35, 60, 0.92) 60%,
+    rgba(15, 15, 23, 0.98) 100%);
+  border: 2px solid transparent;
+  backdrop-filter: blur(30px);
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.coze-recommendation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    #00ff88, #ff0080, #00d4ff, #8b5cf6, #ff6b35, #00ff88
+  );
+  background-size: 300% 300%;
+  opacity: 0;
+  z-index: -1;
+  border-radius: 24px;
+  transition: opacity 0.4s ease;
+  animation: gradient-border 3s ease infinite;
+}
+
+.coze-recommendation-card::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.98) 0%, 
+    rgba(26, 26, 46, 0.95) 30%,
+    rgba(20, 35, 60, 0.92) 60%,
+    rgba(15, 15, 23, 0.98) 100%);
+  border-radius: 22px;
+  z-index: -1;
+}
+
+.coze-recommendation-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 
+    0 25px 80px rgba(0, 255, 136, 0.25),
+    0 15px 40px rgba(255, 0, 128, 0.15),
+    0 5px 20px rgba(0, 212, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.coze-recommendation-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes gradient-border {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.coze-logo-container {
+  position: relative;
+  display: inline-block;
+}
+
+.coze-logo-glow {
+  position: relative;
+  padding: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    rgba(0, 255, 136, 0.3) 0%, 
+    rgba(255, 0, 128, 0.2) 30%,
+    rgba(0, 212, 255, 0.15) 60%,
+    transparent 100%);
+  animation: logoGlow 4s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+  0% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 136, 0.4),
+      0 0 40px rgba(0, 255, 136, 0.2),
+      0 0 60px rgba(0, 255, 136, 0.1);
+    transform: scale(1);
+  }
+  25% {
+    box-shadow: 
+      0 0 30px rgba(255, 0, 128, 0.5),
+      0 0 50px rgba(255, 0, 128, 0.3),
+      0 0 70px rgba(255, 0, 128, 0.15);
+    transform: scale(1.05);
+  }
+  50% {
+    box-shadow: 
+      0 0 35px rgba(0, 212, 255, 0.6),
+      0 0 60px rgba(0, 212, 255, 0.4),
+      0 0 80px rgba(0, 212, 255, 0.2);
+    transform: scale(1.1);
+  }
+  75% {
+    box-shadow: 
+      0 0 25px rgba(139, 92, 246, 0.5),
+      0 0 45px rgba(139, 92, 246, 0.3),
+      0 0 65px rgba(139, 92, 246, 0.15);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 136, 0.4),
+      0 0 40px rgba(0, 255, 136, 0.2),
+      0 0 60px rgba(0, 255, 136, 0.1);
+    transform: scale(1);
+  }
+}
+
+.coze-divider {
+  width: 120px;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 136, 0.3) 20%,
+    rgba(255, 0, 128, 0.6) 40%,
+    rgba(0, 212, 255, 0.8) 60%,
+    rgba(139, 92, 246, 0.6) 80%,
+    transparent 100%);
+  margin: 0 auto;
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.coze-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.6) 50%, 
+    transparent 100%);
+  animation: shimmer 3s infinite;
+}
+
+.coze-divider::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 7px;
+  background: radial-gradient(circle, 
+    rgba(0, 255, 136, 1) 0%,
+    rgba(0, 212, 255, 0.8) 50%,
+    transparent 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 15px rgba(0, 255, 136, 0.8),
+    0 0 25px rgba(0, 212, 255, 0.6);
+  animation: centerGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes centerGlow {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) scale(1.3);
+    opacity: 1;
+  }
+}
+
+.coze-text-block {
+  position: relative;
+  margin: 20px 0;
+}
+
+.coze-bullet-point {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.bullet-glow {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+  animation: bulletPulse 2s ease-in-out infinite;
+}
+
+@keyframes bulletPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.coze-highlight {
+  color: rgba(0, 255, 255, 1);
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  position: relative;
+}
+
+.coze-buttons-container {
+  position: relative;
+  z-index: 2;
+}
+
+.coze-button-wrapper {
+  position: relative;
+}
+
+.coze-store-button, .coze-platform-button {
+  position: relative;
+  height: 80px;
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.95) 0%, 
+    rgba(26, 26, 46, 0.9) 30%,
+    rgba(20, 35, 60, 0.85) 60%,
+    rgba(15, 15, 23, 0.95) 100%);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  color: white;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.coze-store-button::before, .coze-platform-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    #00ff88, #ff0080, #00d4ff, #8b5cf6, #ff6b35, #00ff88
+  );
+  background-size: 300% 300%;
+  opacity: 0;
+  z-index: -1;
+  border-radius: 16px;
+  transition: opacity 0.4s ease;
+  animation: gradient-border 3s ease infinite;
+}
+
+.coze-store-button::after, .coze-platform-button::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.95) 0%, 
+    rgba(26, 26, 46, 0.9) 30%,
+    rgba(20, 35, 60, 0.85) 60%,
+    rgba(15, 15, 23, 0.95) 100%);
+  border-radius: 14px;
+  z-index: -1;
+}
+
+.coze-store-button:hover, .coze-platform-button:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 
+    0 15px 40px rgba(0, 255, 136, 0.25),
+    0 10px 25px rgba(255, 0, 128, 0.15),
+    0 5px 15px rgba(0, 212, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.coze-store-button:hover::before, .coze-platform-button:hover::before {
+  opacity: 1;
+}
+
+.coze-store-button:active, .coze-platform-button:active {
+  transform: translateY(-3px) scale(0.98);
+  transition: all 0.1s ease;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.button-icon {
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.button-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.button-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.button-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.button-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.2) 50%, 
+    transparent 100%);
+  transition: left 0.6s ease;
+}
+
+.coze-store-button:hover .button-glow,
+.coze-platform-button:hover .button-glow {
+  left: 100%;
+}
+
+.coze-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.decoration-line {
+  position: absolute;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  height: 1px;
+}
+
+.decoration-line-1 {
+  top: 20%;
+  left: 0;
+  right: 0;
+  animation: lineMove1 8s linear infinite;
+}
+
+.decoration-line-2 {
+  bottom: 20%;
+  left: 0;
+  right: 0;
+  animation: lineMove2 10s linear infinite;
+}
+
+@keyframes lineMove1 {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes lineMove2 {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.decoration-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(0, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+}
+
+.decoration-particle-1 {
+  top: 10%;
+  left: 10%;
+  animation: particleFloat1 6s ease-in-out infinite;
+}
+
+.decoration-particle-2 {
+  top: 70%;
+  right: 15%;
+  animation: particleFloat2 8s ease-in-out infinite;
+}
+
+.decoration-particle-3 {
+  bottom: 15%;
+  left: 20%;
+  animation: particleFloat3 7s ease-in-out infinite;
+}
+
+@keyframes particleFloat1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translate(20px, -10px) scale(1.2);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(-10px, 15px) scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+@keyframes particleFloat2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-15px, -20px) scale(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes particleFloat3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translate(10px, -15px) scale(1.1);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translate(-5px, 10px) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+/* Coze图标手机端响应式样式 - 增强优先级 */
+@media (max-width: 768px) {
+  .coze-logo-container .h-12.w-12,
+  .coze-logo-container svg.h-12.w-12,
+  .coze-logo-glow .h-12.w-12,
+  .coze-logo-glow svg.h-12.w-12 {
+    height: 4rem !important;
+    width: 4rem !important;
+    min-height: 4rem !important;
+    min-width: 4rem !important;
+  }
+  
+  .coze-logo-glow {
+    padding: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .coze-logo-container .h-12.w-12,
+  .coze-logo-container svg.h-12.w-12,
+  .coze-logo-glow .h-12.w-12,
+  .coze-logo-glow svg.h-12.w-12 {
+    height: 5rem !important;
+    width: 5rem !important;
+    min-height: 5rem !important;
+    min-width: 5rem !important;
+  }
+  
+  .coze-logo-glow {
+    padding: 28px !important;
+  }
+}
+
+/* 额外的手机端样式保障 */
+@media (max-width: 640px) {
+  .fixed.bottom-8.right-8 .h-12.w-12,
+  .fixed.bottom-8.right-8 svg.h-12.w-12 {
+    height: 4.5rem !important;
+    width: 4.5rem !important;
+    min-height: 4.5rem !important;
+    min-width: 4.5rem !important;
+  }
+}
+
+/* 项目亮点卡片 - 极致科技感设计 */
+.highlight-card {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.05) 0%, 
+    rgba(0, 255, 255, 0.04) 25%,
+    rgba(138, 43, 226, 0.05) 50%,
+    rgba(255, 20, 147, 0.04) 75%,
+    rgba(0, 255, 136, 0.05) 100%);
+  border: 2px solid transparent;
+  border-radius: 28px;
+  backdrop-filter: blur(25px) saturate(1.5);
+  overflow: hidden;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+  box-shadow: 
+    0 8px 32px rgba(0, 255, 136, 0.1),
+    0 4px 16px rgba(0, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  animation: cardPulse 4s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(0, 255, 136, 0.1),
+      0 4px 16px rgba(0, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 12px 40px rgba(0, 255, 136, 0.15),
+      0 6px 20px rgba(0, 255, 255, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+.highlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.1) 0%, 
+    rgba(0, 255, 255, 0.08) 25%,
+    rgba(138, 43, 226, 0.1) 50%,
+    rgba(255, 20, 147, 0.08) 75%,
+    rgba(0, 255, 136, 0.1) 100%);
+  border-radius: 24px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: -1;
+}
+
+.highlight-card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    #00ff88, #00ffff, #8a2be2, #ff1493, #00ff88);
+  background-size: 400% 400%;
+  border-radius: 26px;
+  z-index: -2;
+  opacity: 0;
+  animation: gradientShift 8s ease infinite;
+  transition: opacity 0.6s ease;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+.highlight-card:hover {
+  transform: translateY(-20px) scale(1.05) rotateX(5deg);
+  box-shadow: 
+    0 40px 80px rgba(0, 255, 136, 0.25),
+    0 25px 50px rgba(0, 255, 255, 0.2),
+    0 15px 30px rgba(138, 43, 226, 0.3),
+    0 5px 15px rgba(255, 20, 147, 0.25),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 20px rgba(0, 255, 136, 0.1);
+  animation: none;
+  border: 2px solid rgba(0, 255, 136, 0.5);
+}
+
+.highlight-card:hover::before {
+  opacity: 1;
+}
+
+.highlight-card:hover::after {
+  opacity: 1;
+}
+
+.highlight-card:hover .highlight-icon-container {
+  transform: scale(1.2) rotateY(180deg) rotateZ(10deg);
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.3), 
+    rgba(0, 255, 255, 0.25),
+    rgba(138, 43, 226, 0.3),
+    rgba(255, 20, 147, 0.25));
+  box-shadow: 
+    0 0 30px rgba(0, 255, 136, 0.5),
+    0 0 60px rgba(0, 255, 255, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* 斜向扫描线效果 */
+.highlight-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 30px;
+  height: 200%;
+  background: linear-gradient(45deg, 
+    transparent, 
+    rgba(0, 255, 136, 0.9), 
+    rgba(0, 255, 255, 0.8),
+    rgba(138, 43, 226, 0.9),
+    transparent);
+  opacity: 0;
+  transition: all 0.8s ease;
+  z-index: 10;
+  pointer-events: none;
+  transform: rotate(45deg);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 136, 0.5),
+    0 0 40px rgba(0, 255, 255, 0.3);
+}
+
+.highlight-card:hover::after {
+  left: 150%;
+  opacity: 1;
+  animation: diagonalScanLine 1.2s ease-in-out 1;
+}
+
+@keyframes diagonalScanLine {
+  0% { 
+    left: -50%; 
+    opacity: 0;
+    transform: rotate(45deg) scale(0.8);
+  }
+  30% { 
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+  70% { 
+    opacity: 1;
+    transform: rotate(45deg) scale(1.1);
+  }
+  100% { 
+    left: 150%; 
+    opacity: 0;
+    transform: rotate(45deg) scale(0.8);
+  }
+}
+
+/* 能量波纹效果 */
+.highlight-card .energy-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 255, 136, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.highlight-card:hover .energy-ripple {
+  animation: energyRipple 2s ease-out infinite;
+}
+
+@keyframes energyRipple {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    border-color: rgba(0, 255, 136, 0.8);
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+    border-color: rgba(0, 255, 136, 0);
+  }
+}
+
+.highlight-card:hover .highlight-title {
+  background: linear-gradient(45deg, #00ff88, #00ffff, #8a2be2, #ff1493);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textGradientShift 3s ease infinite;
+}
+
+@keyframes textGradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.highlight-icon-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.1), 
+    rgba(0, 255, 255, 0.08),
+    rgba(138, 43, 226, 0.1),
+    rgba(255, 20, 147, 0.08));
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+}
+
+.highlight-icon-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  background: conic-gradient(from 0deg, 
+    transparent, 
+    rgba(0, 255, 136, 0.3), 
+    transparent, 
+    rgba(0, 255, 255, 0.3),
+    transparent,
+    rgba(138, 43, 226, 0.3),
+    transparent,
+    rgba(255, 20, 147, 0.3),
+    transparent);
+  transform: translate(-50%, -50%) rotate(0deg);
+  border-radius: 50%;
+  animation: iconRotate 8s linear infinite;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+@keyframes iconRotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.highlight-card:hover .highlight-icon-container::before {
+  opacity: 1;
+}
+
+.highlight-icon {
+  width: 40px;
+  height: 40px;
+  z-index: 2;
+  position: relative;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.highlight-card:hover .highlight-icon {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 20px currentColor) drop-shadow(0 0 40px currentColor);
+}
+
+.highlight-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  transition: all 0.6s ease;
+  position: relative;
+}
+
+.highlight-desc {
+  color: rgba(248, 250, 252, 0.8);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  transition: all 0.6s ease;
+}
+
+.highlight-card:hover .highlight-desc {
+  color: rgba(248, 250, 252, 0.95);
+  transform: translateY(-2px);
+}
+
+/* 增强粒子效果 */
+.highlight-card .particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(0, 255, 136, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: particleFloat 6s ease-in-out infinite;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.highlight-card .particle:nth-child(1) {
+  top: 15%;
+  left: 8%;
+  animation-delay: 0s;
+  background: rgba(0, 255, 255, 0.8);
+  animation: particleFloat 5s ease-in-out infinite, particlePulse 2s ease-in-out infinite;
+}
+
+.highlight-card .particle:nth-child(2) {
+  top: 65%;
+  left: 85%;
+  animation-delay: 1.5s;
+  background: rgba(138, 43, 226, 0.8);
+  animation: particleFloat 6s ease-in-out infinite, particlePulse 2.5s ease-in-out infinite;
+}
+
+.highlight-card .particle:nth-child(3) {
+  top: 85%;
+  left: 15%;
+  animation-delay: 3s;
+  background: rgba(255, 20, 147, 0.8);
+  animation: particleFloat 7s ease-in-out infinite, particlePulse 3s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0px) scale(0.3) rotate(0deg);
+  }
+  25% {
+    opacity: 0.7;
+    transform: translateY(-15px) scale(0.8) rotate(90deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.2) rotate(180deg);
+  }
+  75% {
+    opacity: 0.7;
+    transform: translateY(-15px) scale(0.8) rotate(270deg);
+  }
+}
+
+@keyframes particlePulse {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+}
+
+.highlight-card:hover .particle {
+  animation-duration: 2s;
+  opacity: 1;
+}
+
+/* 霓虹灯边框效果 */
+.highlight-card .neon-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid transparent;
+  border-radius: 28px;
+  background: linear-gradient(45deg, 
+    rgba(0, 255, 136, 0.8), 
+    rgba(0, 255, 255, 0.6),
+    rgba(138, 43, 226, 0.8),
+    rgba(255, 20, 147, 0.6),
+    rgba(0, 255, 136, 0.8)) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  animation: neonPulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.highlight-card:hover .neon-border {
+  opacity: 1;
+  animation: neonFlow 2s linear infinite;
+}
+
+@keyframes neonPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes neonFlow {
+  0% {
+    background: linear-gradient(45deg, 
+      rgba(0, 255, 136, 0.8), 
+      rgba(0, 255, 255, 0.6),
+      rgba(138, 43, 226, 0.8),
+      rgba(255, 20, 147, 0.6),
+      rgba(0, 255, 136, 0.8)) border-box;
+  }
+  25% {
+    background: linear-gradient(45deg, 
+      rgba(0, 255, 255, 0.8), 
+      rgba(138, 43, 226, 0.6),
+      rgba(255, 20, 147, 0.8),
+      rgba(0, 255, 136, 0.6),
+      rgba(0, 255, 255, 0.8)) border-box;
+  }
+  50% {
+    background: linear-gradient(45deg, 
+      rgba(138, 43, 226, 0.8), 
+      rgba(255, 20, 147, 0.6),
+      rgba(0, 255, 136, 0.8),
+      rgba(0, 255, 255, 0.6),
+      rgba(138, 43, 226, 0.8)) border-box;
+  }
+  75% {
+    background: linear-gradient(45deg, 
+      rgba(255, 20, 147, 0.8), 
+      rgba(0, 255, 136, 0.6),
+      rgba(0, 255, 255, 0.8),
+      rgba(138, 43, 226, 0.6),
+      rgba(255, 20, 147, 0.8)) border-box;
+  }
+  100% {
+    background: linear-gradient(45deg, 
+      rgba(0, 255, 136, 0.8), 
+      rgba(0, 255, 255, 0.6),
+      rgba(138, 43, 226, 0.8),
+      rgba(255, 20, 147, 0.6),
+      rgba(0, 255, 136, 0.8)) border-box;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .highlight-icon-container {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+  }
+  
+  .highlight-icon {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .highlight-title {
+    font-size: 1.3rem;
+  }
+  
+  .highlight-desc {
+    font-size: 0.9rem;
+  }
+}
+
+/* 技术支持项目样式 */
+.tech-support-item {
+  position: relative;
+  padding: 12px 0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tech-support-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+  transform: translateX(4px);
+}
+
+.tech-icon-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+  margin-right: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.tech-icon-dot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.tech-support-item:hover .tech-icon-dot {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px currentColor;
+}
+
+.tech-support-item:hover .tech-icon-dot::before {
+  opacity: 1;
+  animation: techPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes techPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.6;
+  }
+}
+
+.tech-support-item .text-xs {
+  transition: color 0.3s ease;
+}
+
+.tech-support-item:hover .text-xs {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 交互提示信息样式 */
+.interaction-hint-container {
+  background: rgba(15, 15, 23, 0.8);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 25px;
+  padding: 12px 24px;
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 2px 15px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(0, 255, 136, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.interaction-hint-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.08), transparent);
+  animation: hint-glow 3s infinite;
+}
+
+@keyframes hint-glow {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.interaction-hint-text {
+  font-size: 0.9rem;
+  color: rgba(0, 255, 136, 0.8);
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 /* 增强的自定义滚动条 */
@@ -1012,16 +2592,74 @@
   box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
 }
 
-/* 右侧固定开发中卡片 */
-.developing-card-fixed {
-  width: 320px;
+/* 右侧开发中卡片 */
+/* 开发中卡片容器 - 在容器内部并列显示 */
+.developing-card-container {
+  width: 120px;
   flex-shrink: 0;
-  margin-top: 2rem; /* 适当下移 */
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0;
+}
+
+.developing-card-fixed {
+  width: 120px; /* 进一步减小宽度 */
+  flex-shrink: 0;
+  position: relative; /* 改为相对定位，在容器内部 */
+}
+
+/* 开发中卡片专属样式 - 极简设计 */
+.developing-card-container .agent-card-compact {
+  padding: 0.5rem; /* 最小内边距 */
+  min-height: auto; /* 自适应高度 */
+  height: 100%;
+}
+
+.developing-card-container .agent-card-compact .card-content {
+  padding: 1rem 0.75rem; /* 紧凑的内容区域 */
+}
+
+/* 开发中卡片的图标 */
+.developing-card-container .developing-icon {
+  padding: 0.75rem; /* 适中的图标容器 */
+  margin-bottom: 0.75rem;
+}
+
+.developing-card-container .developing-icon .lucide {
+  width: 1.25rem;
+  height: 1.25rem; /* 适中的图标尺寸 */
 }
 
 /* 取消开发中卡片的悬停上浮效果 */
+.developing-card-container .agent-card-compact:hover {
+  transform: none !important;
+  box-shadow: none !important; /* 取消悬停阴影 */
+}
+
+/* 保持原有样式兼容性 */
+.developing-card-fixed .agent-card-compact {
+  padding: 0.5rem;
+  min-height: auto;
+}
+
+.developing-card-fixed .agent-card-compact .card-content {
+  padding: 1rem 0.75rem;
+}
+
+.developing-card-fixed .developing-icon {
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.developing-card-fixed .developing-icon .lucide {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .developing-card-fixed .agent-card-compact:hover {
   transform: none !important;
+  box-shadow: none !important;
 }
 
 /* 滚动进度条容器 */
@@ -1029,7 +2667,7 @@
   position: absolute;
   bottom: 0.75rem;
   left: 1.5rem;
-  right: calc(320px + 3rem); /* 为右侧卡片留出空间 */
+  right: 1.5rem; /* 扩展到容器右边缘 */
   height: 4px;
   z-index: 3;
 }
@@ -1387,6 +3025,9 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .agent-container::before {
@@ -1418,7 +3059,8 @@
   z-index: -1;
 }
 
-.agent-container:hover {
+/* 容器悬停效果 - 通过JavaScript控制 */
+.agent-container.container-hovered {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 
     0 20px 60px rgba(0, 255, 136, 0.3),
@@ -1426,16 +3068,23 @@
     0 0 80px rgba(0, 212, 255, 0.1);
 }
 
-.agent-container:hover::before {
+.agent-container.container-hovered::before {
   opacity: 1;
   animation: gradient-border 2s ease infinite;
+}
+
+/* 禁用原有的CSS悬停效果 */
+.agent-container:hover {
+  /* 移除原有的悬停效果，改为通过JavaScript控制 */
+}
+
+.agent-container:hover::before {
+  /* 移除原有的悬停效果，改为通过JavaScript控制 */
 }
 
 .agent-container-inner {
   position: relative;
   z-index: 2;
-  display: flex;
-  gap: 1.5rem;
   height: 400px;
   user-select: none;
   -webkit-user-select: none;
@@ -1475,8 +3124,8 @@
 
 /* 紧凑型智能体卡片 */
 .agent-card-compact {
-  min-width: 320px;
-  max-width: 320px;
+  min-width: 260px;
+  max-width: 260px;
   height: 350px;
   flex-shrink: 0;
   transition: all 0.3s ease;
@@ -1490,13 +3139,24 @@
   -ms-user-select: none;
 }
 
-.agent-card-compact:hover {
+/* 智能体卡片悬停效果 - 新的悬停逻辑 */
+.agent-card-compact.card-hovered {
   transform: translateY(-8px);
   z-index: 10;
 }
 
+/* 禁用原有的CSS悬停效果 */
+.agent-card-compact:hover {
+  /* 移除原有的悬停效果，改为通过JavaScript控制 */
+}
+
 /* 开发中卡片不应用悬停上浮效果 */
 .developing-card-fixed .agent-card-compact:hover {
+  transform: none !important;
+}
+
+.developing-card-container .agent-card-compact.card-hovered {
+  /* 开发中卡片也不应用悬停上浮效果 */
   transform: none !important;
 }
 
@@ -1783,6 +3443,202 @@
   transition: all 0.1s ease;
 }
 
+/* 项目介绍按钮样式 - Cyberpunk风格 */
+.project-intro-button {
+  position: relative;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  border: none;
+  color: #000000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 
+    0 0 30px rgba(0, 245, 255, 0.3),
+    inset 0 0 30px rgba(0, 245, 255, 0.1),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+  animation: dark-pulse 3s ease-in-out infinite;
+}
+
+/* 按钮内部光效 */
+.project-intro-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 245, 255, 0.6), 
+    rgba(255, 20, 147, 0.4), 
+    transparent
+  );
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+/* 按钮边框光效 */
+.project-intro-button::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, 
+    #00f5ff 0%, 
+    #ff1493 25%, 
+    #00ff41 50%, 
+    #ff1493 75%, 
+    #00f5ff 100%
+  );
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: cyberpunk-border 4s ease-in-out infinite;
+  filter: blur(1px);
+}
+
+@keyframes cyberpunk-border {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: blur(1px) brightness(1) hue-rotate(0deg);
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+  }
+  25% {
+    background-position: 100% 0%;
+    filter: blur(2px) brightness(1.2) hue-rotate(90deg);
+    box-shadow: 0 0 30px rgba(255, 20, 147, 0.4);
+  }
+  50% {
+    background-position: 100% 100%;
+    filter: blur(1px) brightness(1.5) hue-rotate(180deg);
+    box-shadow: 0 0 40px rgba(0, 255, 65, 0.5);
+  }
+  75% {
+    background-position: 0% 100%;
+    filter: blur(2px) brightness(1.2) hue-rotate(270deg);
+    box-shadow: 0 0 35px rgba(255, 255, 0, 0.4);
+  }
+}
+
+/* 悬停效果 */
+.project-intro-button:hover {
+  color: #000000;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  box-shadow: 
+    0 0 50px rgba(0, 245, 255, 0.6),
+    inset 0 0 50px rgba(0, 245, 255, 0.2),
+    0 8px 25px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  text-shadow: 
+    0 0 15px rgba(0, 245, 255, 1),
+    0 0 30px rgba(255, 20, 147, 0.8);
+}
+
+.project-intro-button:hover::before {
+  left: 100%;
+}
+
+.project-intro-button:hover::after {
+  animation-duration: 2s;
+  filter: blur(0px) brightness(1.8);
+}
+
+/* 激活效果 */
+.project-intro-button:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 
+    0 0 30px rgba(0, 245, 255, 0.8),
+    inset 0 0 40px rgba(0, 245, 255, 0.3),
+    0 2px 10px rgba(0, 0, 0, 0.5);
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* 故障效果动画 */
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0) scale(0.98);
+    filter: hue-rotate(0deg) contrast(1);
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+  }
+  10% {
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: hue-rotate(90deg) contrast(1.2);
+    text-shadow: 2px 0 0 rgba(255, 0, 0, 0.8), -2px 0 0 rgba(0, 255, 255, 0.8);
+  }
+  20% {
+    transform: translate(2px, -2px) scale(0.98);
+    filter: hue-rotate(180deg) contrast(0.8);
+    text-shadow: 0 2px 0 rgba(255, 0, 255, 0.8), 0 -2px 0 rgba(0, 255, 0, 0.8);
+  }
+  30% {
+    transform: translate(-2px, -2px) scale(0.98);
+    filter: hue-rotate(270deg) contrast(1.5);
+    text-shadow: -1px -1px 0 rgba(255, 255, 0, 0.8), 1px 1px 0 rgba(255, 0, 255, 0.8);
+  }
+  40% {
+    transform: translate(2px, 2px) scale(0.98);
+    filter: hue-rotate(45deg) contrast(1.1);
+    text-shadow: 1px 0 0 rgba(0, 255, 255, 0.8), -1px 0 0 rgba(255, 255, 0, 0.8);
+  }
+  50% {
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: hue-rotate(135deg) contrast(1.3);
+    text-shadow: 0 0 15px rgba(255, 0, 128, 0.9), 0 0 30px rgba(0, 255, 255, 0.6);
+  }
+  60% {
+    transform: translate(2px, -2px) scale(0.98);
+    filter: hue-rotate(225deg) contrast(0.9);
+    text-shadow: 1px -1px 0 rgba(0, 255, 0, 0.8), -1px 1px 0 rgba(255, 0, 0, 0.8);
+  }
+  70% {
+    transform: translate(-2px, -2px) scale(0.98);
+    filter: hue-rotate(315deg) contrast(1.4);
+    text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.9), 1px 1px 0 rgba(0, 0, 255, 0.8);
+  }
+  80% {
+    transform: translate(2px, 2px) scale(0.98);
+    filter: hue-rotate(45deg) contrast(1.1);
+    text-shadow: 1px 1px 0 rgba(255, 128, 0, 0.8), -1px -1px 0 rgba(128, 255, 0, 0.8);
+  }
+  90% {
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: hue-rotate(0deg) contrast(1);
+    text-shadow: 0 0 5px rgba(0, 245, 255, 0.8);
+  }
+}
+
+/* 暗黑脉冲动画 */
+@keyframes dark-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 30px rgba(0, 245, 255, 0.3),
+      inset 0 0 30px rgba(0, 245, 255, 0.1),
+      0 4px 15px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+  }
+  33% {
+    box-shadow: 
+      0 0 40px rgba(255, 20, 147, 0.4),
+      inset 0 0 40px rgba(255, 20, 147, 0.15),
+      0 6px 20px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 0 15px rgba(255, 20, 147, 0.9);
+  }
+  66% {
+    box-shadow: 
+      0 0 35px rgba(0, 255, 65, 0.35),
+      inset 0 0 35px rgba(0, 255, 65, 0.12),
+      0 5px 18px rgba(0, 0, 0, 0.35);
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.85);
+  }
+}
+
 @keyframes gradient-border {
   0%, 100% {
     background-position: 0% 50%;
@@ -1991,7 +3847,7 @@
 /* 增强的响应式设计 */
 @media (max-width: 768px) {
   .matrix-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 280px));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 220px));
     gap: 1.5rem;
     justify-content: center;
     justify-items: center;
@@ -2007,6 +3863,10 @@
   
   .glass-card:hover {
     transform: translateY(-2px) scale(1.01);
+  }
+  
+  .developing-card-container {
+    display: none; /* 在手机上隐藏开发中卡片 */
   }
   
   .developing-card-fixed {
@@ -2028,7 +3888,7 @@
 
 @media (max-width: 480px) {
   .matrix-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
     gap: 1rem;
   }
   
@@ -2051,15 +3911,67 @@
     border-right: none; /* 移除打字机光标效果 */
     animation: none; /* 禁用打字机动画 */
   }
+  
+  /* 聊天提示框在手机端的样式优化 */
+  .chat-tip-container {
+    min-width: 280px !important;
+    max-width: calc(100vw - 32px) !important;
+    padding: 12px 16px !important;
+  }
+  
+  /* 智能体标题字体大小调整 */
+  .chat-tip-container h3 {
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 类别名称字体大小调整 */
+  .chat-tip-container p {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 启动成功提示字体大小调整 */
+  .chat-tip-container span {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 智能体图标大小调整 */
+  .chat-tip-container .w-12.h-12 {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .chat-tip-container .h-6.w-6 {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  /* 状态指示器大小调整 */
+  .chat-tip-container .w-4.h-4 {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  /* 动画指示器大小调整 */
+  .chat-tip-container .w-2.h-2 {
+    width: 6px !important;
+    height: 6px !important;
+  }
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
+  .developing-card-container {
+    width: 160px; /* 在平板上减小宽度 */
+  }
+  
   .developing-card-fixed {
-    width: 280px; /* 在平板上稍微减小宽度 */
+    width: 160px; /* 在平板上减小宽度 */
   }
   
   .scroll-progress-container {
-    right: calc(280px + 2.5rem); /* 调整进度条位置 */
+    right: 1.5rem; /* 扩展到容器右边缘 */
   }
   
   .main-title {
@@ -2076,5 +3988,1157 @@
 @keyframes thumb-shine {
   0% { left: -100%; }
   100% { left: 100%; }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToTop {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+  }
+}
+
+/* Coze平台推荐组件样式 */
+.coze-recommendation-section {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 192px auto 0 auto;
+}
+
+.coze-recommendation-card {
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.98) 0%, 
+    rgba(26, 26, 46, 0.95) 30%,
+    rgba(20, 35, 60, 0.92) 60%,
+    rgba(15, 15, 23, 0.98) 100%);
+  border: 2px solid transparent;
+  backdrop-filter: blur(30px);
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.coze-recommendation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    #00ff88, #ff0080, #00d4ff, #8b5cf6, #ff6b35, #00ff88
+  );
+  background-size: 300% 300%;
+  opacity: 0;
+  z-index: -1;
+  border-radius: 24px;
+  transition: opacity 0.4s ease;
+  animation: gradient-border 3s ease infinite;
+}
+
+.coze-recommendation-card::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.98) 0%, 
+    rgba(26, 26, 46, 0.95) 30%,
+    rgba(20, 35, 60, 0.92) 60%,
+    rgba(15, 15, 23, 0.98) 100%);
+  border-radius: 22px;
+  z-index: -1;
+}
+
+.coze-recommendation-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 
+    0 25px 80px rgba(0, 255, 136, 0.25),
+    0 15px 40px rgba(255, 0, 128, 0.15),
+    0 5px 20px rgba(0, 212, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.coze-recommendation-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes gradient-border {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.coze-logo-container {
+  position: relative;
+  display: inline-block;
+}
+
+.coze-logo-glow {
+  position: relative;
+  padding: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    rgba(0, 255, 136, 0.3) 0%, 
+    rgba(255, 0, 128, 0.2) 30%,
+    rgba(0, 212, 255, 0.15) 60%,
+    transparent 100%);
+  animation: logoGlow 4s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+  0% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 136, 0.4),
+      0 0 40px rgba(0, 255, 136, 0.2),
+      0 0 60px rgba(0, 255, 136, 0.1);
+    transform: scale(1);
+  }
+  25% {
+    box-shadow: 
+      0 0 30px rgba(255, 0, 128, 0.5),
+      0 0 50px rgba(255, 0, 128, 0.3),
+      0 0 70px rgba(255, 0, 128, 0.15);
+    transform: scale(1.05);
+  }
+  50% {
+    box-shadow: 
+      0 0 35px rgba(0, 212, 255, 0.6),
+      0 0 60px rgba(0, 212, 255, 0.4),
+      0 0 80px rgba(0, 212, 255, 0.2);
+    transform: scale(1.1);
+  }
+  75% {
+    box-shadow: 
+      0 0 25px rgba(139, 92, 246, 0.5),
+      0 0 45px rgba(139, 92, 246, 0.3),
+      0 0 65px rgba(139, 92, 246, 0.15);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 136, 0.4),
+      0 0 40px rgba(0, 255, 136, 0.2),
+      0 0 60px rgba(0, 255, 136, 0.1);
+    transform: scale(1);
+  }
+}
+
+.coze-divider {
+  width: 120px;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 136, 0.3) 20%,
+    rgba(255, 0, 128, 0.6) 40%,
+    rgba(0, 212, 255, 0.8) 60%,
+    rgba(139, 92, 246, 0.6) 80%,
+    transparent 100%);
+  margin: 0 auto;
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.coze-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.6) 50%, 
+    transparent 100%);
+  animation: shimmer 3s infinite;
+}
+
+.coze-divider::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 7px;
+  background: radial-gradient(circle, 
+    rgba(0, 255, 136, 1) 0%,
+    rgba(0, 212, 255, 0.8) 50%,
+    transparent 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 15px rgba(0, 255, 136, 0.8),
+    0 0 25px rgba(0, 212, 255, 0.6);
+  animation: centerGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes centerGlow {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) scale(1.3);
+    opacity: 1;
+  }
+}
+
+.coze-text-block {
+  position: relative;
+  margin: 20px 0;
+}
+
+.coze-bullet-point {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.bullet-glow {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+  animation: bulletPulse 2s ease-in-out infinite;
+}
+
+@keyframes bulletPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.coze-highlight {
+  color: rgba(0, 255, 255, 1);
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  position: relative;
+}
+
+.coze-buttons-container {
+  position: relative;
+  z-index: 2;
+}
+
+.coze-button-wrapper {
+  position: relative;
+}
+
+.coze-store-button, .coze-platform-button {
+  position: relative;
+  height: 80px;
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.95) 0%, 
+    rgba(26, 26, 46, 0.9) 30%,
+    rgba(20, 35, 60, 0.85) 60%,
+    rgba(15, 15, 23, 0.95) 100%);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  color: white;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.coze-store-button::before, .coze-platform-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    #00ff88, #ff0080, #00d4ff, #8b5cf6, #ff6b35, #00ff88
+  );
+  background-size: 300% 300%;
+  opacity: 0;
+  z-index: -1;
+  border-radius: 16px;
+  transition: opacity 0.4s ease;
+  animation: gradient-border 3s ease infinite;
+}
+
+.coze-store-button::after, .coze-platform-button::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: linear-gradient(145deg, 
+    rgba(15, 15, 23, 0.95) 0%, 
+    rgba(26, 26, 46, 0.9) 30%,
+    rgba(20, 35, 60, 0.85) 60%,
+    rgba(15, 15, 23, 0.95) 100%);
+  border-radius: 14px;
+  z-index: -1;
+}
+
+.coze-store-button:hover, .coze-platform-button:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 
+    0 15px 40px rgba(0, 255, 136, 0.25),
+    0 10px 25px rgba(255, 0, 128, 0.15),
+    0 5px 15px rgba(0, 212, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.coze-store-button:hover::before, .coze-platform-button:hover::before {
+  opacity: 1;
+}
+
+.coze-store-button:active, .coze-platform-button:active {
+  transform: translateY(-3px) scale(0.98);
+  transition: all 0.1s ease;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.button-icon {
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.button-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.button-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.button-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.button-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.2) 50%, 
+    transparent 100%);
+  transition: left 0.6s ease;
+}
+
+.coze-store-button:hover .button-glow,
+.coze-platform-button:hover .button-glow {
+  left: 100%;
+}
+
+.coze-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.decoration-line {
+  position: absolute;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  height: 1px;
+}
+
+.decoration-line-1 {
+  top: 20%;
+  left: 0;
+  right: 0;
+  animation: lineMove1 8s linear infinite;
+}
+
+.decoration-line-2 {
+  bottom: 20%;
+  left: 0;
+  right: 0;
+  animation: lineMove2 10s linear infinite;
+}
+
+@keyframes lineMove1 {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes lineMove2 {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.decoration-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(0, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+}
+
+.decoration-particle-1 {
+  top: 10%;
+  left: 10%;
+  animation: particleFloat1 6s ease-in-out infinite;
+}
+
+.decoration-particle-2 {
+  top: 70%;
+  right: 15%;
+  animation: particleFloat2 8s ease-in-out infinite;
+}
+
+.decoration-particle-3 {
+  bottom: 15%;
+  left: 20%;
+  animation: particleFloat3 7s ease-in-out infinite;
+}
+
+@keyframes particleFloat1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translate(20px, -10px) scale(1.2);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(-10px, 15px) scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+@keyframes particleFloat2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-15px, -20px) scale(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes particleFloat3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translate(10px, -15px) scale(1.1);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translate(-5px, 10px) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+/* Coze图标手机端响应式样式 - 增强优先级 */
+@media (max-width: 768px) {
+  .coze-logo-container .h-12.w-12,
+  .coze-logo-container svg.h-12.w-12,
+  .coze-logo-glow .h-12.w-12,
+  .coze-logo-glow svg.h-12.w-12 {
+    height: 4rem !important;
+    width: 4rem !important;
+    min-height: 4rem !important;
+    min-width: 4rem !important;
+  }
+  
+  .coze-logo-glow {
+    padding: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .coze-logo-container .h-12.w-12,
+  .coze-logo-container svg.h-12.w-12,
+  .coze-logo-glow .h-12.w-12,
+  .coze-logo-glow svg.h-12.w-12 {
+    height: 5rem !important;
+    width: 5rem !important;
+    min-height: 5rem !important;
+    min-width: 5rem !important;
+  }
+  
+  .coze-logo-glow {
+    padding: 28px !important;
+  }
+}
+
+/* 额外的手机端样式保障 */
+@media (max-width: 640px) {
+  .fixed.bottom-8.right-8 .h-12.w-12,
+  .fixed.bottom-8.right-8 svg.h-12.w-12 {
+    height: 4.5rem !important;
+    width: 4.5rem !important;
+    min-height: 4.5rem !important;
+    min-width: 4.5rem !important;
+  }
+}
+
+/* 项目亮点卡片 - 极致科技感设计 */
+.highlight-card {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.05) 0%, 
+    rgba(0, 255, 255, 0.04) 25%,
+    rgba(138, 43, 226, 0.05) 50%,
+    rgba(255, 20, 147, 0.04) 75%,
+    rgba(0, 255, 136, 0.05) 100%);
+  border: 2px solid transparent;
+  border-radius: 28px;
+  backdrop-filter: blur(25px) saturate(1.5);
+  overflow: hidden;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+  box-shadow: 
+    0 8px 32px rgba(0, 255, 136, 0.1),
+    0 4px 16px rgba(0, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  animation: cardPulse 4s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(0, 255, 136, 0.1),
+      0 4px 16px rgba(0, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 12px 40px rgba(0, 255, 136, 0.15),
+      0 6px 20px rgba(0, 255, 255, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+.highlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.1) 0%, 
+    rgba(0, 255, 255, 0.08) 25%,
+    rgba(138, 43, 226, 0.1) 50%,
+    rgba(255, 20, 147, 0.08) 75%,
+    rgba(0, 255, 136, 0.1) 100%);
+  border-radius: 24px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: -1;
+}
+
+.highlight-card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    #00ff88, #00ffff, #8a2be2, #ff1493, #00ff88);
+  background-size: 400% 400%;
+  border-radius: 26px;
+  z-index: -2;
+  opacity: 0;
+  animation: gradientShift 8s ease infinite;
+  transition: opacity 0.6s ease;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+.highlight-card:hover {
+  transform: translateY(-20px) scale(1.05) rotateX(5deg);
+  box-shadow: 
+    0 40px 80px rgba(0, 255, 136, 0.25),
+    0 25px 50px rgba(0, 255, 255, 0.2),
+    0 15px 30px rgba(138, 43, 226, 0.3),
+    0 5px 15px rgba(255, 20, 147, 0.25),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 20px rgba(0, 255, 136, 0.1);
+  animation: none;
+  border: 2px solid rgba(0, 255, 136, 0.5);
+}
+
+.highlight-card:hover::before {
+  opacity: 1;
+}
+
+.highlight-card:hover::after {
+  opacity: 1;
+}
+
+.highlight-card:hover .highlight-icon-container {
+  transform: scale(1.2) rotateY(180deg) rotateZ(10deg);
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.3), 
+    rgba(0, 255, 255, 0.25),
+    rgba(138, 43, 226, 0.3),
+    rgba(255, 20, 147, 0.25));
+  box-shadow: 
+    0 0 30px rgba(0, 255, 136, 0.5),
+    0 0 60px rgba(0, 255, 255, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* 斜向扫描线效果 */
+.highlight-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 30px;
+  height: 200%;
+  background: linear-gradient(45deg, 
+    transparent, 
+    rgba(0, 255, 136, 0.9), 
+    rgba(0, 255, 255, 0.8),
+    rgba(138, 43, 226, 0.9),
+    transparent);
+  opacity: 0;
+  transition: all 0.8s ease;
+  z-index: 10;
+  pointer-events: none;
+  transform: rotate(45deg);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 136, 0.5),
+    0 0 40px rgba(0, 255, 255, 0.3);
+}
+
+.highlight-card:hover::after {
+  left: 150%;
+  opacity: 1;
+  animation: diagonalScanLine 1.2s ease-in-out 1;
+}
+
+@keyframes diagonalScanLine {
+  0% { 
+    left: -50%; 
+    opacity: 0;
+    transform: rotate(45deg) scale(0.8);
+  }
+  30% { 
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+  70% { 
+    opacity: 1;
+    transform: rotate(45deg) scale(1.1);
+  }
+  100% { 
+    left: 150%; 
+    opacity: 0;
+    transform: rotate(45deg) scale(0.8);
+  }
+}
+
+/* 能量波纹效果 */
+.highlight-card .energy-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 255, 136, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.highlight-card:hover .energy-ripple {
+  animation: energyRipple 2s ease-out infinite;
+}
+
+@keyframes energyRipple {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    border-color: rgba(0, 255, 136, 0.8);
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+    border-color: rgba(0, 255, 136, 0);
+  }
+}
+
+.highlight-card:hover .highlight-title {
+  background: linear-gradient(45deg, #00ff88, #00ffff, #8a2be2, #ff1493);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textGradientShift 3s ease infinite;
+}
+
+@keyframes textGradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.highlight-icon-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.1), 
+    rgba(0, 255, 255, 0.08),
+    rgba(138, 43, 226, 0.1),
+    rgba(255, 20, 147, 0.08));
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+}
+
+.highlight-icon-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  background: conic-gradient(from 0deg, 
+    transparent, 
+    rgba(0, 255, 136, 0.3), 
+    transparent, 
+    rgba(0, 255, 255, 0.3),
+    transparent,
+    rgba(138, 43, 226, 0.3),
+    transparent,
+    rgba(255, 20, 147, 0.3),
+    transparent);
+  transform: translate(-50%, -50%) rotate(0deg);
+  border-radius: 50%;
+  animation: iconRotate 8s linear infinite;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+@keyframes iconRotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.highlight-card:hover .highlight-icon-container::before {
+  opacity: 1;
+}
+
+.highlight-icon {
+  width: 40px;
+  height: 40px;
+  z-index: 2;
+  position: relative;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.highlight-card:hover .highlight-icon {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 20px currentColor) drop-shadow(0 0 40px currentColor);
+}
+
+.highlight-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  transition: all 0.6s ease;
+  position: relative;
+}
+
+.highlight-desc {
+  color: rgba(248, 250, 252, 0.8);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  transition: all 0.6s ease;
+}
+
+.highlight-card:hover .highlight-desc {
+  color: rgba(248, 250, 252, 0.95);
+  transform: translateY(-2px);
+}
+
+/* 增强粒子效果 */
+.highlight-card .particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(0, 255, 136, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: particleFloat 6s ease-in-out infinite;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.highlight-card .particle:nth-child(1) {
+  top: 15%;
+  left: 8%;
+  animation-delay: 0s;
+  background: rgba(0, 255, 255, 0.8);
+  animation: particleFloat 5s ease-in-out infinite, particlePulse 2s ease-in-out infinite;
+}
+
+.highlight-card .particle:nth-child(2) {
+  top: 65%;
+  left: 85%;
+  animation-delay: 1.5s;
+  background: rgba(138, 43, 226, 0.8);
+  animation: particleFloat 6s ease-in-out infinite, particlePulse 2.5s ease-in-out infinite;
+}
+
+.highlight-card .particle:nth-child(3) {
+  top: 85%;
+  left: 15%;
+  animation-delay: 3s;
+  background: rgba(255, 20, 147, 0.8);
+  animation: particleFloat 7s ease-in-out infinite, particlePulse 3s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0px) scale(0.3) rotate(0deg);
+  }
+  25% {
+    opacity: 0.7;
+    transform: translateY(-15px) scale(0.8) rotate(90deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.2) rotate(180deg);
+  }
+  75% {
+    opacity: 0.7;
+    transform: translateY(-15px) scale(0.8) rotate(270deg);
+  }
+}
+
+@keyframes particlePulse {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+}
+
+.highlight-card:hover .particle {
+  animation-duration: 2s;
+  opacity: 1;
+}
+
+/* 霓虹灯边框效果 */
+.highlight-card .neon-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid transparent;
+  border-radius: 28px;
+  background: linear-gradient(45deg, 
+    rgba(0, 255, 136, 0.8), 
+    rgba(0, 255, 255, 0.6),
+    rgba(138, 43, 226, 0.8),
+    rgba(255, 20, 147, 0.6),
+    rgba(0, 255, 136, 0.8)) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  animation: neonPulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.highlight-card:hover .neon-border {
+  opacity: 1;
+  animation: neonFlow 2s linear infinite;
+}
+
+@keyframes neonPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes neonFlow {
+  0% {
+    background: linear-gradient(45deg, 
+      rgba(0, 255, 136, 0.8), 
+      rgba(0, 255, 255, 0.6),
+      rgba(138, 43, 226, 0.8),
+      rgba(255, 20, 147, 0.6),
+      rgba(0, 255, 136, 0.8)) border-box;
+  }
+  25% {
+    background: linear-gradient(45deg, 
+      rgba(0, 255, 255, 0.8), 
+      rgba(138, 43, 226, 0.6),
+      rgba(255, 20, 147, 0.8),
+      rgba(0, 255, 136, 0.6),
+      rgba(0, 255, 255, 0.8)) border-box;
+  }
+  50% {
+    background: linear-gradient(45deg, 
+      rgba(138, 43, 226, 0.8), 
+      rgba(255, 20, 147, 0.6),
+      rgba(0, 255, 136, 0.8),
+      rgba(0, 255, 255, 0.6),
+      rgba(138, 43, 226, 0.8)) border-box;
+  }
+  75% {
+    background: linear-gradient(45deg, 
+      rgba(255, 20, 147, 0.8), 
+      rgba(0, 255, 136, 0.6),
+      rgba(0, 255, 255, 0.8),
+      rgba(138, 43, 226, 0.6),
+      rgba(255, 20, 147, 0.8)) border-box;
+  }
+  100% {
+    background: linear-gradient(45deg, 
+      rgba(0, 255, 136, 0.8), 
+      rgba(0, 255, 255, 0.6),
+      rgba(138, 43, 226, 0.8),
+      rgba(255, 20, 147, 0.6),
+      rgba(0, 255, 136, 0.8)) border-box;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .highlight-icon-container {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+  }
+  
+  .highlight-icon {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .highlight-title {
+    font-size: 1.3rem;
+  }
+  
+  .highlight-desc {
+    font-size: 0.9rem;
+  }
+}
+
+/* 技术支持项目样式 */
+.tech-support-item {
+  position: relative;
+  padding: 12px 0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tech-support-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+  transform: translateX(4px);
+}
+
+.tech-icon-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+  margin-right: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.tech-icon-dot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.tech-support-item:hover .tech-icon-dot {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px currentColor;
+}
+
+.tech-support-item:hover .tech-icon-dot::before {
+  opacity: 1;
+  animation: techPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes techPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.6;
+  }
+}
+
+.tech-support-item .text-xs {
+  transition: color 0.3s ease;
+}
+
+.tech-support-item:hover .text-xs {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 交互提示信息样式 */
+.interaction-hint-container {
+  background: rgba(15, 15, 23, 0.8);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 25px;
+  padding: 12px 24px;
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 2px 15px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(0, 255, 136, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.interaction-hint-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.08), transparent);
+  animation: hint-glow 3s infinite;
+}
+
+@keyframes hint-glow {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.interaction-hint-text {
+  font-size: 0.9rem;
+  color: rgba(0, 255, 136, 0.8);
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  position: relative;
+  z-index: 1;
 }
 

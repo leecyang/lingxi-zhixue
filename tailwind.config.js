@@ -45,6 +45,16 @@ export default {
     {
       pattern: /(bg|text|border|ring)-(primary|secondary|accent|destructive|muted|card|popover|border|input|ring|background|foreground).*/, 
     },
+    {
+      pattern: /bg-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(100|200|300|400|500|600|700|800|900).*/,
+    },
+    {
+      pattern: /text-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(100|200|300|400|500|600|700|800|900).*/,
+    },
+    'animate-in',
+    'fade-in-0',
+    'zoom-in-95',
+    'slide-in-from-top-4',
   ],
   plugins: [],
 }

@@ -37,7 +37,7 @@ import {
   FileText,
   Loader
 } from 'lucide-react'
-import { initScrollProgress } from './scrollProgress'
+import { initScrollProgress as initCustomScrollProgress } from './scrollProgress'
 import './app.css'
 
 // 智能体数据 - 使用用户提供的具体名称
@@ -160,7 +160,7 @@ const highlights = [
   {
     icon: Brain,
     title: 'AI原生智能体',
-    desc: '11个专业智能体协同工作，覆盖学生成长全方位需求',
+    desc: '11+专业智能体协同工作，覆盖学生成长全方位需求',
     color: 'text-blue-400'
   },
   {
@@ -202,6 +202,9 @@ function App() {
   const [selectedAgent, setSelectedAgent] = useState(null)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [hoveredCard, setHoveredCard] = useState(null) // 卡片悬停状态
+  const [hoveredContainer, setHoveredContainer] = useState(null) // 容器悬停状态
+  const [chatTips, setChatTips] = useState([]) // 聊天提示框队列
   const [terminalLogs, setTerminalLogs] = useState([
     '> 系统初始化中...',
     '> 加载AR环境...',
@@ -210,6 +213,31 @@ function App() {
   ])
 
   const particlesRef = useRef(null)
+
+  // 页面刷新时返回首页
+  useEffect(() => {
+    // 页面加载时滚动到顶部
+    window.scrollTo(0, 0)
+    
+    // 监听页面刷新事件
+    const handleBeforeUnload = () => {
+      // 在页面卸载前记录需要返回首页
+      sessionStorage.setItem('shouldScrollToTop', 'true')
+    }
+    
+    // 页面加载完成后检查是否需要滚动到顶部
+    const shouldScrollToTop = sessionStorage.getItem('shouldScrollToTop')
+    if (shouldScrollToTop) {
+      window.scrollTo(0, 0)
+      sessionStorage.removeItem('shouldScrollToTop')
+    }
+    
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [])
 
   // 滚动监听和进度条
   useEffect(() => {
@@ -252,9 +280,9 @@ function App() {
     document.addEventListener('dragstart', handleDragStart)
     document.addEventListener('selectstart', handleSelectStart)
     
-    // 初始化滚动进度条
+    // 延迟初始化，确保DOM元素已经渲染完成
     const timer = setTimeout(() => {
-      initScrollProgress()
+      initCustomScrollProgress()
     }, 100)
     
     return () => {
@@ -305,12 +333,16 @@ function App() {
   // SDK方式启动智能体
   const launchAgentSDK = (agent) => {
     if (window.CozeWebSDK) {
-      new window.CozeWebSDK.WebChatClient({
+      const chatClient = new window.CozeWebSDK.WebChatClient({
         config: {
           bot_id: agent.bot_id,
         },
         componentProps: {
           title: agent.name,
+          theme: 'light',
+          mode: 'light',
+          appearance: 'light',
+          colorScheme: 'light',
         },
         auth: {
           type: 'token',
@@ -320,8 +352,58 @@ function App() {
           }
         }
       });
+      
+      // 找到智能体所属的类别信息
+      let categoryInfo = null;
+      for (const [categoryName, categoryData] of Object.entries(agentMatrix)) {
+        if (categoryData.agents.some(a => a.bot_id === agent.bot_id)) {
+          categoryInfo = {
+            name: categoryName,
+            icon: categoryData.icon,
+            color: categoryData.color,
+            bgGradient: categoryData.bgGradient
+          };
+          break;
+        }
+      }
+      
+      // 创建新的对话框对象
+      const newChatTip = {
+        id: Date.now() + Math.random(), // 唯一ID
+        agent: { ...agent, category: categoryInfo },
+        animating: false,
+        createdAt: Date.now()
+      };
+      
+      // 添加到对话框队列
+      setChatTips(prev => {
+        const maxVisibleTips = 3; // 最多显示3个聊天框
+        let updatedTips = [...prev];
+        
+        // 如果当前已经达到最大数量，先移除最老的聊天框
+        if (updatedTips.length >= maxVisibleTips) {
+          // 立即移除最老的聊天框，不等待动画
+          updatedTips = updatedTips.slice(1);
+        }
+        
+        // 添加新的聊天框
+        updatedTips.push(newChatTip);
+        
+        return updatedTips;
+      });
+      
+      // 3秒后开始退出动画（作为备用机制）
+      setTimeout(() => {
+        setChatTips(prev => prev.map(tip => 
+          tip.id === newChatTip.id ? { ...tip, animating: true } : tip
+        ));
+        // 动画完成后移除对话框
+        setTimeout(() => {
+          setChatTips(prev => prev.filter(tip => tip.id !== newChatTip.id));
+        }, 500); // 与退出动画时长一致
+      }, 3000);
     } else {
-      alert('Coze SDK 尚未加载完成，请稍后再试')
+      console.error('CozeWebSDK 未加载');
     }
   }
 
@@ -347,6 +429,58 @@ function App() {
         style={{ transform: `scaleX(${scrollProgress / 100})` }}
       />
 
+      {/* 聊天提示框队列 */}
+      {chatTips.map((chatTip, index) => (
+        <div key={chatTip.id} className="fixed left-0 right-0 flex justify-center" 
+             style={{
+               top: `${24 + (chatTips.length - 1 - index) * 20}px`, // 新的聊天框在上方，每个间隔20px
+               zIndex: 50 + index, // 新的聊天框有更高的z-index
+               animation: chatTip.animating ? 'slideOutToTop 0.5s ease-in forwards' : 'slideInFromTop 0.5s ease-out forwards'
+             }}>
+          <div className={`chat-tip-container ${
+            chatTip.agent.category?.name === '学习认知类智能体' ? 'bg-blue-500' :
+            chatTip.agent.category?.name === '心理支持类智能体' ? 'bg-pink-500' :
+            chatTip.agent.category?.name === '健康生活类智能体' ? 'bg-green-500' :
+            chatTip.agent.category?.name === '自主成长与社交协作类' ? 'bg-purple-500' :
+            'bg-slate-700'
+          } border border-white/30 rounded-xl px-8 py-4 shadow-2xl min-w-96 max-w-2xl transform transition-all duration-300 hover:scale-105`}>
+            <div className="flex items-center space-x-4">
+              {/* 智能体图标和状态 */}
+              <div className="relative flex-shrink-0">
+                <div className={`w-12 h-12 rounded-full ${
+                  chatTip.agent.category?.name === '学习认知类智能体' ? 'bg-blue-600' :
+                  chatTip.agent.category?.name === '心理支持类智能体' ? 'bg-pink-600' :
+                  chatTip.agent.category?.name === '健康生活类智能体' ? 'bg-green-600' :
+                  chatTip.agent.category?.name === '自主成长与社交协作类' ? 'bg-purple-600' :
+                  'bg-slate-600'
+                } flex items-center justify-center shadow-lg`}>
+                  {chatTip.agent.icon && <chatTip.agent.icon className="h-6 w-6 text-white" />}
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse border-2 border-white" />
+              </div>
+              
+              {/* 智能体信息 */}
+              <div className="text-white flex-1">
+                <div className="flex items-center space-x-3">
+                  <h3 className="font-bold text-lg">{chatTip.agent.name}</h3>
+                  <span className="text-sm text-white/60">•</span>
+                  <p className="text-sm text-white/80">{chatTip.agent.category?.name}</p>
+                  <span className="text-sm font-medium text-green-300">成功启动</span>
+                </div>
+                <p className="text-sm text-white/70 mt-1">现在点击右下角悬浮球开始对话吧</p>
+              </div>
+              
+              {/* 动画指示器 */}
+              <div className="flex space-x-1 flex-shrink-0">
+                <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{animationDelay: '0ms'}} />
+                <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{animationDelay: '150ms'}} />
+                <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{animationDelay: '300ms'}} />
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
       {/* 浮动粒子背景 */}
       <div ref={particlesRef} className="floating-particles fixed inset-0 z-0" />
 
@@ -365,19 +499,19 @@ function App() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 onClick={scrollToAgents}
+                variant="outline"
                 size="lg" 
-                className="cyber-button text-lg px-8 py-4"
+                className="project-intro-button text-lg px-8 py-4"
               >
-                <Sparkles className="mr-2 h-5 w-5" />
+                <Play className="mr-2 h-5 w-5" />
                 开始探索
               </Button>
               <Button 
                 onClick={scrollToTeamInfo}
-                variant="outline"
                 size="lg" 
-                className="neon-border border-primary text-primary hover:bg-primary hover:text-black"
+                className="cyber-button text-lg px-8 py-4"
               >
-                <Play className="mr-2 h-5 w-5" />
+                <Sparkles className="mr-2 h-5 w-5" />
                 项目介绍
               </Button>
             </div>
@@ -395,9 +529,13 @@ function App() {
                多智能体矩阵系统
              </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 data-stream">
-              11个专业智能体协同工作，为学生提供全方位、个性化的学习支持
+              11+专业智能体协同工作，为学生提供全方位、个性化的学习支持
             </p>
-            
+            <div className="interaction-hint-container max-w-2xl mx-auto mb-8">
+              <p className="interaction-hint-text">
+                滑动以预览，点击启动对话立刻开始线上体验
+              </p>
+            </div>
 
           </div>
 
@@ -425,15 +563,27 @@ function App() {
                   </div>
                   
                   {/* 科技感容器 */}
-                  <div className={`agent-container ${getThemeClass(category)}`}>
+                  <div 
+                    className={`agent-container ${getThemeClass(category)} ${hoveredContainer === category ? 'container-hovered' : ''}`}
+                    onMouseEnter={() => setHoveredContainer(category)}
+                    onMouseLeave={() => {}} // 不在这里清除悬停状态
+                  >
                     <div className="agent-container-inner">
                       {/* 智能体卡片滚动区域 */}
-                      <div className="agent-scroll-area" id={`scroll-${category.replace(/[^a-zA-Z0-9]/g, '')}`}>
+                      <div className="agent-scroll-area" id={`scroll-${Object.keys(agentMatrix).indexOf(category)}`}>
                         <div className="agent-cards-wrapper">
                           {data.agents.map((agent, index) => {
                             const AgentIcon = agent.icon
+                            const cardId = `${category}-${index}`
+                            const isHovered = hoveredCard === cardId
+                            
                             return (
-                              <Card key={index} className={`agent-card-compact glass-card hologram ${getThemeClass(category)}`}>
+                              <Card 
+                                key={index} 
+                                className={`agent-card-compact glass-card hologram ${getThemeClass(category)} ${isHovered ? 'card-hovered' : ''}`}
+                                onMouseEnter={() => setHoveredCard(cardId)}
+                                onMouseLeave={() => {}} // 不在这里清除悬停状态
+                              >
                                 <CardHeader className="text-center pb-3">
                                   <div className={`mx-auto mb-3 p-3 rounded-xl bg-gradient-to-br ${data.bgGradient} w-fit`}>
                                     <AgentIcon className={`h-6 w-6 ${data.color}`} />
@@ -467,7 +617,7 @@ function App() {
                                       size="sm"
                                     >
                                       <MessageCircle className="mr-1 h-3 w-3" />
-                                      启动
+                                      启动对话
                                     </Button>
                                     <Button
                                       variant="outline"
@@ -482,69 +632,34 @@ function App() {
                               </Card>
                             )
                           })}
+                          
+                          {/* 开发中卡片 - 与智能体卡片一起滚动 */}
+                          <Card 
+                            className={`agent-card-compact glass-card developing-card ${getThemeClass(category)} ${hoveredCard === `${category}-dev` ? 'card-hovered' : ''}`}
+                            onMouseEnter={() => setHoveredCard(`${category}-dev`)}
+                            onMouseLeave={() => {}} // 不在这里清除悬停状态
+                          >
+                            <CardHeader className="text-center pb-3">
+                              <div className={`mx-auto mb-3 p-3 rounded-xl bg-gradient-to-br ${data.bgGradient} w-fit developing-icon`}>
+                                <Settings className={`h-5 w-5 ${data.color} animate-spin`} />
+                              </div>
+                              <CardTitle className="text-lg font-bold">后续智能体</CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-center">
+                              <p className="text-muted-foreground text-sm leading-relaxed">
+                                正在开发中，敬请期待...
+                              </p>
+                            </CardContent>
+                          </Card>
                         </div>
                       </div>
-                      
-                      {/* 右侧开发中卡片 */}
-                      <div className="developing-card-fixed">
-                        <Card className={`agent-card-compact glass-card developing-card ${getThemeClass(category)}`}>
-                          <CardHeader className="text-center pb-3">
-                            <div className={`mx-auto mb-3 p-3 rounded-xl bg-gradient-to-br ${data.bgGradient} w-fit developing-icon`}>
-                              <Settings className={`h-6 w-6 ${data.color} animate-spin-slow`} />
-                            </div>
-                            <CardTitle className="text-lg font-bold developing-title">更多智能体</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-3">
-                            <p className="text-muted-foreground text-xs leading-relaxed text-center">
-                              正在开发中...
-                            </p>
-                            
-                            {/* 开发进度指示 */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>进度</span>
-                                <span>75%</span>
-                              </div>
-                              <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                                <div className="developing-progress h-full bg-gradient-to-r from-primary/50 to-primary rounded-full" style={{width: '75%'}}></div>
-                              </div>
-                            </div>
-                            
-                            {/* 预期功能标签 */}
-                            <div className="flex flex-wrap gap-1">
-                              <Badge variant="outline" className="text-xs border-primary/20 text-primary/60 developing-badge">
-                                敬请期待
-                              </Badge>
-                            </div>
-                            
-                            {/* 占位按钮 */}
-                            <div className="flex gap-2 pt-2">
-                              <Button
-                                disabled
-                                className="flex-1 opacity-50 cursor-not-allowed"
-                                size="sm"
-                              >
-                                <Clock className="mr-1 h-3 w-3" />
-                                开发中
-                              </Button>
-                              <Button
-                                disabled
-                                variant="outline"
-                                size="sm"
-                                className="opacity-50 cursor-not-allowed px-2"
-                              >
-                                <Loader className="h-3 w-3 animate-spin" />
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
+
                     </div>
                     
                     {/* 滚动进度条 */}
                     <div className="scroll-progress-container">
                       <div className="scroll-progress-track">
-                        <div className="scroll-progress-thumb" data-scroll-target={`scroll-${category.replace(/[^a-zA-Z0-9]/g, '')}`}></div>
+                        <div className="scroll-progress-thumb" data-scroll-target={`scroll-${Object.keys(agentMatrix).indexOf(category)}`}></div>
                       </div>
                     </div>
                   </div>
@@ -553,6 +668,118 @@ function App() {
             })}
           </div>
 
+          {/* Coze平台推荐组件 */}
+          <div className="coze-recommendation-section">
+            <Card className="coze-recommendation-card glass-card hologram">
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <div className="coze-logo-container mb-6">
+                    <div className="coze-logo-glow">
+                      <Sparkles className="h-12 w-12 text-primary mx-auto" />
+                    </div>
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-4">
+                    体验完整功能，尽在Coze平台
+                  </h3>
+                  <div className="coze-divider"></div>
+                </div>
+                
+                <div className="space-y-6">
+                  {/* 第一段文字 */}
+                  <div className="coze-text-block">
+                    <div className="flex items-start gap-4">
+                      <div className="coze-bullet-point">
+                        <div className="bullet-glow"></div>
+                      </div>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        我们强烈建议您通过
+                        <span className="coze-highlight">Coze商店</span>
+                        使用我们的智能体以便体验到完整的功能。
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* 第二段文字 */}
+                  <div className="coze-text-block">
+                    <div className="flex items-start gap-4">
+                      <div className="coze-bullet-point">
+                        <div className="bullet-glow"></div>
+                      </div>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        您可以打开智能体详情页面获取
+                        <span className="coze-highlight">Bot ID</span>
+                        进行快速访问。
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* 按钮区域 */}
+                  <div className="coze-buttons-container">
+                    <div className="grid md:grid-cols-2 gap-6 mt-8">
+                      {/* Coze商店按钮 */}
+                      <div className="coze-button-wrapper">
+                        <Button 
+                          className="coze-store-button w-full"
+                          onClick={() => window.open('https://www.coze.cn/store', '_blank')}
+                        >
+                          <div className="button-content">
+                            <div className="button-icon">
+                              <ExternalLink className="h-5 w-5" />
+                            </div>
+                            <div className="button-text">
+                              <span className="button-title">Coze商店</span>
+                              <span className="button-subtitle">体验完整功能</span>
+                            </div>
+                          </div>
+                          <div className="button-glow"></div>
+                        </Button>
+                      </div>
+                      
+                      {/* Coze平台按钮 */}
+                      <div className="coze-button-wrapper">
+                        <Button 
+                          className="coze-platform-button w-full"
+                          onClick={() => window.open('https://www.coze.cn', '_blank')}
+                        >
+                          <div className="button-content">
+                            <div className="button-icon">
+                              <Code className="h-5 w-5" />
+                            </div>
+                            <div className="button-text">
+                              <span className="button-title">Coze平台</span>
+                              <span className="button-subtitle">0代码开发智能体</span>
+                            </div>
+                          </div>
+                          <div className="button-glow"></div>
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* 第三段文字 */}
+                    <div className="coze-text-block mt-8">
+                      <div className="text-center">
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                          跃跃欲试了吗？点击进入
+                          <span className="coze-highlight">Coze平台</span>
+                          体验0代码开发智能体，与我们共建
+                          <span className="coze-highlight gradient-text">灵犀社区</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 装饰性元素 */}
+                <div className="coze-decoration">
+                  <div className="decoration-line decoration-line-1"></div>
+                  <div className="decoration-line decoration-line-2"></div>
+                  <div className="decoration-particle decoration-particle-1"></div>
+                  <div className="decoration-particle decoration-particle-2"></div>
+                  <div className="decoration-particle decoration-particle-3"></div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
         </div>
       </section>
@@ -574,7 +801,7 @@ function App() {
         </div>
       </section>
 
-
+      <div className="section-divider" />
 
       {/* 项目亮点区 */}
       <section className="py-20 px-4 relative z-10">
@@ -592,17 +819,18 @@ function App() {
             {highlights.map((highlight, index) => {
               const IconComponent = highlight.icon
               return (
-                <Card key={index} className="glass-card text-center agent-card hologram">
-                  <CardHeader>
-                    <div className="mx-auto mb-4 p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 w-fit">
-                      <IconComponent className={`h-8 w-8 ${highlight.color}`} />
-                    </div>
-                    <CardTitle className="text-xl font-bold">{highlight.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground leading-relaxed">{highlight.desc}</p>
-                  </CardContent>
-                </Card>
+                <div key={index} className="highlight-card p-8">
+               <div className="neon-border"></div>
+               <div className="particle"></div>
+               <div className="particle"></div>
+               <div className="particle"></div>
+               <div className="energy-ripple"></div>
+               <div className="highlight-icon-container">
+                 <IconComponent className={`highlight-icon ${highlight.color}`} />
+               </div>
+               <h3 className="highlight-title text-white text-center">{highlight.title}</h3>
+               <p className="highlight-desc text-center">{highlight.desc}</p>
+             </div>
               )
             })}
           </div>
@@ -631,25 +859,28 @@ function App() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Badge variant="outline" className="mb-3 border-primary/30 text-primary">项目负责人</Badge>
-                  <p className="font-semibold text-lg">{teamInfo.leader}</p>
-                </div>
-                <div>
-                  <Badge variant="outline" className="mb-3 border-yellow-400/30 text-yellow-400">指导老师</Badge>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1">
-                    <p className="text-muted-foreground">钱燕</p>
-                    <p className="text-muted-foreground">邹修国</p>
-                    <p className="text-muted-foreground">封筱</p>
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-primary/20 border-primary/40"></div>
+                    <Badge variant="outline" className="border-primary/30 text-primary text-xs font-medium">项目负责人</Badge>
                   </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed font-semibold">{teamInfo.leader} - 负责项目整体规划与技术架构设计</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-3 border-accent/30 text-accent">联合开发</Badge>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1">
-                    {teamInfo.members.map((member, index) => (
-                      <p key={index} className="text-muted-foreground">{member}</p>
-                    ))}
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-yellow-400/20 border-yellow-400/40"></div>
+                    <Badge variant="outline" className="border-yellow-400/30 text-yellow-400 text-xs font-medium">指导老师</Badge>
                   </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">钱燕、邹修国、封筱 - 提供学术指导与技术支持，确保项目的科学性与创新性</p>
+                </div>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-accent/20 border-accent/40"></div>
+                    <Badge variant="outline" className="border-accent/30 text-accent text-xs font-medium">联合开发</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">{teamInfo.members.join('、')} - 协同开发核心功能模块，共同推进项目实施</p>
                 </div>
               </CardContent>
             </Card>
@@ -662,21 +893,45 @@ function App() {
                   技术支持方向
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <Badge variant="outline" className="mb-2 border-primary/30 text-primary text-xs">多智能体系统设计与语义调度</Badge>
+              <CardContent className="space-y-4">
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-primary/20 border-primary/40"></div>
+                    <Badge variant="outline" className="border-primary/30 text-primary text-xs font-medium">多智能体系统</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">构建智能体协作网络，实现语义理解与任务分发的自动化调度机制</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-yellow-400/30 text-yellow-400 text-xs">低代码平台应用与能力原子化封装（Coze）</Badge>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-yellow-400/20 border-yellow-400/40"></div>
+                    <Badge variant="outline" className="border-yellow-400/30 text-yellow-400 text-xs font-medium">低代码平台（Coze）</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">基于Coze平台的模块化开发，实现教育功能的快速组装与部署</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-accent/30 text-accent text-xs">Web前端开发与UI交互展示（HTML/CSS/JS）</Badge>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-accent/20 border-accent/40"></div>
+                    <Badge variant="outline" className="border-accent/30 text-accent text-xs font-medium">Web前端开发</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">现代化前端技术栈，打造流畅的用户交互体验与响应式界面设计</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-green-400/30 text-green-400 text-xs">教育类WebAR实验构建与3D模型交互优化（A-Frame + AR.js）</Badge>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-green-400/20 border-green-400/40"></div>
+                    <Badge variant="outline" className="border-green-400/30 text-green-400 text-xs font-medium">WebAR实验构建</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">沉浸式AR教学环境，支持3D模型实时交互与虚实融合的学习体验</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-purple-400/30 text-purple-400 text-xs">可穿戴硬件兼容与未来拓展支持（Rokid 设备）</Badge>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-purple-400/20 border-purple-400/40"></div>
+                    <Badge variant="outline" className="border-purple-400/30 text-purple-400 text-xs font-medium">硬件兼容支持</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">面向未来的硬件生态适配，支持AR眼镜等智能穿戴设备的无缝集成</p>
                 </div>
               </CardContent>
             </Card>
@@ -693,35 +948,44 @@ function App() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Badge variant="outline" className="mb-2 border-primary/30 text-primary">智能体开发平台</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Coze by ByteDance
-                  </p>
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-primary/20 border-primary/40"></div>
+                    <Badge variant="outline" className="border-primary/30 text-primary text-xs font-medium">智能体开发平台</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">Coze by ByteDance - 提供强大的智能体构建与部署能力，支持多模态交互</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-yellow-400/30 text-yellow-400">模型运行支持</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    OpenAI GPT-4 / 讯飞星火大模型（预留）
-                  </p>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-yellow-400/20 border-yellow-400/40"></div>
+                    <Badge variant="outline" className="border-yellow-400/30 text-yellow-400 text-xs font-medium">模型运行支持</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">OpenAI GPT-4 + DeepSeek - 核心AI推理引擎，保障智能交互质量</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-accent/30 text-accent">网页开发环境</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    VS Code + GitHub Pages + Netlify
-                  </p>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-accent/20 border-accent/40"></div>
+                    <Badge variant="outline" className="border-accent/30 text-accent text-xs font-medium">网页开发环境</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">VS Code + GitHub Pages + Netlify - 现代化开发工具链，支持快速迭代与部署</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-green-400/30 text-green-400">AR系统框架</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    WebAR.js + A-Frame
-                  </p>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-green-400/20 border-green-400/40"></div>
+                    <Badge variant="outline" className="border-green-400/30 text-green-400 text-xs font-medium">AR系统框架</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">WebAR.js + A-Frame - 跨平台AR解决方案，实现沉浸式学习体验</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-purple-400/30 text-purple-400">演示设备兼容</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    PC / 手机浏览器 / Rokid AR眼镜
-                  </p>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-purple-400/20 border-purple-400/40"></div>
+                    <Badge variant="outline" className="border-purple-400/30 text-purple-400 text-xs font-medium">演示设备兼容</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">PC / 手机浏览器 / Rokid AR眼镜 - 全设备生态支持，适配多样化使用场景</p>
                 </div>
               </CardContent>
             </Card>
@@ -735,23 +999,28 @@ function App() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Badge variant="outline" className="mb-2 border-primary/30 text-primary">多专业共创</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    鼓励多专业学生共创智能体模块，拓展教育生态
-                  </p>
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-primary/20 border-primary/40"></div>
+                    <Badge variant="outline" className="border-primary/30 text-primary text-xs font-medium">多专业共创</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">鼓励多专业学生共创智能体模块，构建跨学科协作的教育创新生态系统</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-yellow-400/30 text-yellow-400">开放接口</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    面向校内外团队开放接口文档与轻部署方案
-                  </p>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-yellow-400/20 border-yellow-400/40"></div>
+                    <Badge variant="outline" className="border-yellow-400/30 text-yellow-400 text-xs font-medium">开放接口</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">面向校内外团队开放接口文档与轻部署方案，降低技术门槛促进广泛应用</p>
                 </div>
-                <div>
-                  <Badge variant="outline" className="mb-2 border-accent/30 text-accent">深度集成</Badge>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    可与未来课程、实验室、教师系统深度集成，打造"共建共育"智能教育平台
-                  </p>
+                
+                <div className="tech-support-item group">
+                  <div className="flex items-center mb-2">
+                    <div className="tech-icon-dot bg-accent/20 border-accent/40"></div>
+                    <Badge variant="outline" className="border-accent/30 text-accent text-xs font-medium">深度集成</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 ml-6 leading-relaxed">可与未来课程、实验室、教师系统深度集成，打造"共建共育"智能教育平台</p>
                 </div>
               </CardContent>
             </Card>
@@ -882,4 +1151,3 @@ function App() {
 }
 
 export default App
-
