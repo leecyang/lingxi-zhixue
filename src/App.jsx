@@ -235,12 +235,6 @@ function App() {
       }
     }
     
-    // 禁用右键菜单
-    const handleContextMenu = (e) => {
-      e.preventDefault()
-      return false
-    }
-    
     // 禁用拖拽
     const handleDragStart = (e) => {
       e.preventDefault()
@@ -255,7 +249,6 @@ function App() {
     
     window.addEventListener('scroll', handleScroll)
     document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('contextmenu', handleContextMenu)
     document.addEventListener('dragstart', handleDragStart)
     document.addEventListener('selectstart', handleSelectStart)
     
@@ -267,7 +260,6 @@ function App() {
     return () => {
       window.removeEventListener('scroll', handleScroll)
       document.removeEventListener('keydown', handleKeyDown)
-      document.removeEventListener('contextmenu', handleContextMenu)
       document.removeEventListener('dragstart', handleDragStart)
       document.removeEventListener('selectstart', handleSelectStart)
       clearTimeout(timer)

@@ -941,6 +941,22 @@
   .neon-text {
     font-size: 2rem;
   }
+  
+  .main-title {
+    font-size: 2.5rem !important; /* 小屏幕手机上进一步减小标题字体 */
+  }
+  
+  .tech-green-text {
+    font-size: 1rem !important; /* 小屏幕上减小副标题字体 */
+    white-space: normal !important; /* 允许换行 */
+    line-height: 1.4;
+  }
+  
+  .typewriter {
+    white-space: normal !important; /* 允许打字机效果文本换行 */
+    border-right: none; /* 移除打字机光标效果 */
+    animation: none; /* 禁用打字机动画 */
+  }
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
@@ -987,12 +1003,25 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #00d4ff, #ff0080);
   box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #00d4ff, #ff0080);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
 }
 
 /* 右侧固定开发中卡片 */
 .developing-card-fixed {
   width: 320px;
   flex-shrink: 0;
+  margin-top: 2rem; /* 适当下移 */
+}
+
+/* 取消开发中卡片的悬停上浮效果 */
+.developing-card-fixed .agent-card-compact:hover {
+  transform: none !important;
 }
 
 /* 滚动进度条容器 */
@@ -1464,6 +1493,11 @@
 .agent-card-compact:hover {
   transform: translateY(-8px);
   z-index: 10;
+}
+
+/* 开发中卡片不应用悬停上浮效果 */
+.developing-card-fixed .agent-card-compact:hover {
+  transform: none !important;
 }
 
 /* 学习认知类智能体卡片 - 蓝色主题 */
@@ -2001,6 +2035,22 @@
   .neon-text {
     font-size: 2rem;
   }
+  
+  .main-title {
+    font-size: 2.5rem !important; /* 小屏幕手机上进一步减小标题字体 */
+  }
+  
+  .tech-green-text {
+    font-size: 1rem !important; /* 小屏幕上减小副标题字体 */
+    white-space: normal !important; /* 允许换行 */
+    line-height: 1.4;
+  }
+  
+  .typewriter {
+    white-space: normal !important; /* 允许打字机效果文本换行 */
+    border-right: none; /* 移除打字机光标效果 */
+    animation: none; /* 禁用打字机动画 */
+  }
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
@@ -2027,17 +2077,4 @@
   0% { left: -100%; }
   100% { left: 100%; }
 }
-
-/* 增强的自定义滚动条 */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #1a1a2e;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #00ff88, #00d4ff);
 
