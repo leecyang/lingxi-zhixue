@@ -138,27 +138,63 @@
 }
 
 .neon-text {
-  font-family: 'Orbitron', 'Exo 2', 'Rajdhani', monospace;
-  font-weight: 700;
+  font-family: 'Orbitron', 'Exo 2', 'Rajdhani', 'Arial Black', 'Helvetica Neue', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #ffffff;
   text-shadow: 
-    0 0 3px currentColor,
-    0 0 6px currentColor,
-    0 0 9px currentColor;
-  animation: neon-flicker 3s ease-in-out infinite alternate;
+    0 0 5px currentColor,
+    0 0 10px currentColor,
+    0 0 15px currentColor,
+    0 0 20px rgba(0, 255, 136, 0.5),
+    0 0 35px rgba(0, 255, 136, 0.3),
+    0 0 40px rgba(0, 255, 136, 0.2);
+  animation: neon-flicker 4s ease-in-out infinite alternate;
+  position: relative;
+  display: inline-block;
+  font-display: swap;
 }
 
 @keyframes neon-flicker {
   0%, 100% {
     text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor,
+      0 0 20px rgba(0, 255, 136, 0.5),
+      0 0 35px rgba(0, 255, 136, 0.3),
+      0 0 40px rgba(0, 255, 136, 0.2);
+    filter: brightness(1);
+  }
+  25% {
+    text-shadow: 
       0 0 3px currentColor,
-      0 0 6px currentColor,
-      0 0 9px currentColor;
+      0 0 8px currentColor,
+      0 0 12px currentColor,
+      0 0 15px rgba(0, 255, 136, 0.4),
+      0 0 25px rgba(0, 255, 136, 0.2),
+      0 0 30px rgba(0, 255, 136, 0.1);
+    filter: brightness(0.9);
   }
   50% {
     text-shadow: 
-      0 0 2px currentColor,
+      0 0 7px currentColor,
+      0 0 12px currentColor,
+      0 0 18px currentColor,
+      0 0 25px rgba(0, 255, 136, 0.6),
+      0 0 40px rgba(0, 255, 136, 0.4),
+      0 0 50px rgba(0, 255, 136, 0.3);
+    filter: brightness(1.1);
+  }
+  75% {
+    text-shadow: 
       0 0 4px currentColor,
-      0 0 6px currentColor;
+      0 0 9px currentColor,
+      0 0 14px currentColor,
+      0 0 18px rgba(0, 255, 136, 0.4),
+      0 0 28px rgba(0, 255, 136, 0.2),
+      0 0 35px rgba(0, 255, 136, 0.1);
+    filter: brightness(0.95);
   }
 }
 
@@ -218,14 +254,36 @@
   box-shadow: 
     0 0 5px currentColor,
     inset 0 0 5px currentColor;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.neon-border:hover::before {
+  left: 100%;
 }
 
 .neon-border:hover {
   box-shadow: 
-    0 0 10px currentColor,
-    0 0 20px currentColor,
-    inset 0 0 10px currentColor;
+    0 0 15px currentColor,
+    0 0 30px currentColor,
+    0 0 45px rgba(0, 255, 136, 0.4),
+    inset 0 0 15px currentColor;
+  transform: translateY(-3px) scale(1.02);
+  border-color: #00ff88;
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
 }
 
 .glass-card {
@@ -249,13 +307,60 @@
   transform: translateY(-4px) scale(1.02);
 }
 
+/* 主标题样式 - 灵犀智学 */
+.main-title {
+  color: #ffffff;
+  text-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.8),
+    0 0 40px rgba(0, 255, 136, 0.6),
+    0 0 60px rgba(0, 255, 136, 0.4),
+    0 0 80px rgba(0, 255, 136, 0.2);
+  animation: float-glow 3s ease-in-out infinite;
+}
+
+@keyframes float-glow {
+  0%, 100% {
+    transform: translateY(0px);
+    text-shadow: 
+      0 0 20px rgba(255, 255, 255, 0.8),
+      0 0 40px rgba(0, 255, 136, 0.6),
+      0 0 60px rgba(0, 255, 136, 0.4),
+      0 0 80px rgba(0, 255, 136, 0.2);
+  }
+  50% {
+    transform: translateY(-10px);
+    text-shadow: 
+      0 0 25px rgba(255, 255, 255, 1),
+      0 0 50px rgba(0, 255, 136, 0.8),
+      0 0 75px rgba(0, 255, 136, 0.6),
+      0 0 100px rgba(0, 255, 136, 0.4);
+  }
+}
+
+/* 副标题样式 - 其他标题 */
 .gradient-text {
-  background: linear-gradient(135deg, #00ff88, #00d4ff, #ff0080, #8b5cf6);
-  background-size: 300% 300%;
+  background: linear-gradient(135deg, #00ff88, #00d4ff, #ff6b6b, #ffd93d);
+  background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradient-shift 4s ease-in-out infinite;
+  animation: gradient-flow 4s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
 }
 
 @keyframes gradient-shift {
@@ -507,8 +612,10 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 15px rgba(0, 255, 136, 0.3),
+    0 0 0 1px rgba(0, 255, 136, 0.2);
 }
 
 .cyber-button::before {
@@ -522,19 +629,53 @@
   transition: left 0.6s ease;
 }
 
+.cyber-button::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00ff88, #00d4ff, #ff6b6b, #ffd93d);
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  animation: gradient-border 3s ease infinite;
+  transition: opacity 0.4s ease;
+}
+
 .cyber-button:hover::before {
   left: 100%;
 }
 
+.cyber-button:hover::after {
+  opacity: 1;
+}
+
 .cyber-button:hover {
+  background: linear-gradient(135deg, #00ff88, #00d4ff);
   box-shadow: 
-    0 0 25px rgba(0, 255, 136, 0.6),
-    0 0 50px rgba(0, 255, 136, 0.4);
-  transform: translateY(-2px) scale(1.05);
+    0 0 30px rgba(0, 255, 136, 0.8),
+    0 0 60px rgba(0, 255, 136, 0.6),
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px) scale(1.08);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .cyber-button:active {
-  transform: translateY(0) scale(1.02);
+  transform: translateY(-1px) scale(1.04);
+  transition: all 0.1s ease;
+}
+
+@keyframes gradient-border {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .floating-particles {
@@ -1697,5 +1838,31 @@
   100% {
     left: 100%;
   }
+}
+
+/* 禁用复制样式 */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 禁用右键菜单 */
+body {
+  -webkit-context-menu: none;
+  -moz-context-menu: none;
+  context-menu: none;
+}
+
+/* 禁用文本选择 */
+::selection {
+  background: transparent;
+}
+
+::-moz-selection {
+  background: transparent;
 }
 

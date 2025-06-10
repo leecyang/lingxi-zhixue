@@ -38,7 +38,7 @@ import {
   Loader
 } from 'lucide-react'
 import { initScrollProgress } from './scrollProgress'
-import './app.css'
+import './App.css'
 
 // 智能体数据 - 使用用户提供的具体名称
 const agentMatrix = {
@@ -184,7 +184,7 @@ const teamInfo = {
   platforms: ['大语言模型（LLM）驱动', 'Coze 低代码智能体平台', '多智能体协作架构', 'WebAR技术集成', '学习行为追踪与反馈', '智能推荐与干预策略'],
   contact: {
     email: 'yangyangli0426@gmail.com',
-    github: 'https://github.com/leecyang/lingxi-zhixue-v2'
+    github: 'https://github.com/leecyang/lingxi-zhixue'
   }
 }
 
@@ -211,15 +211,10 @@ function App() {
 
   const particlesRef = useRef(null)
 
-  // 确保页面刷新时回到顶部
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
-
   // 滚动监听和进度条
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
       const docHeight = document.documentElement.scrollHeight - window.innerHeight
       const progress = (scrollTop / docHeight) * 100
       
@@ -227,7 +222,42 @@ function App() {
       setShowScrollTop(scrollTop > 300)
     }
     
+    // 禁用复制相关的键盘快捷键
+    const handleKeyDown = (e) => {
+      // 禁用 Ctrl+C, Ctrl+A, Ctrl+S, Ctrl+P, F12, Ctrl+Shift+I, Ctrl+U
+      if (
+        (e.ctrlKey && (e.key === 'c' || e.key === 'a' || e.key === 's' || e.key === 'p' || e.key === 'u')) ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        e.key === 'F12'
+      ) {
+        e.preventDefault()
+        return false
+      }
+    }
+    
+    // 禁用右键菜单
+    const handleContextMenu = (e) => {
+      e.preventDefault()
+      return false
+    }
+    
+    // 禁用拖拽
+    const handleDragStart = (e) => {
+      e.preventDefault()
+      return false
+    }
+    
+    // 禁用选择文本
+    const handleSelectStart = (e) => {
+      e.preventDefault()
+      return false
+    }
+    
     window.addEventListener('scroll', handleScroll)
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('contextmenu', handleContextMenu)
+    document.addEventListener('dragstart', handleDragStart)
+    document.addEventListener('selectstart', handleSelectStart)
     
     // 初始化滚动进度条
     const timer = setTimeout(() => {
@@ -236,6 +266,10 @@ function App() {
     
     return () => {
       window.removeEventListener('scroll', handleScroll)
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('contextmenu', handleContextMenu)
+      document.removeEventListener('dragstart', handleDragStart)
+      document.removeEventListener('selectstart', handleSelectStart)
       clearTimeout(timer)
     }
   }, [])
@@ -328,9 +362,9 @@ function App() {
       <section className="hero-section min-h-screen flex items-center justify-center relative">
         <div className="container mx-auto px-4 text-center z-10">
           <div className="space-y-8">
-            <h1 className="text-8xl md:text-[12rem] lg:text-[15rem] font-bold neon-text gradient-text floating-element">
-              灵犀智学
-            </h1>
+            <h1 className="text-[8rem] md:text-[16rem] font-bold neon-text main-title floating-element">
+                 灵犀智学
+               </h1>
             <div className="search-box-container max-w-2xl mx-auto">
               <p className="text-xl md:text-2xl tech-green-text typewriter">
                 多智能体赋能沉浸式教育新生态
@@ -366,8 +400,8 @@ function App() {
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold mb-6 gradient-text floating-element">
-              多智能体矩阵系统
-            </h2>
+               多智能体矩阵系统
+             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 data-stream">
               11个专业智能体协同工作，为学生提供全方位、个性化的学习支持
             </p>
@@ -538,8 +572,8 @@ function App() {
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold mb-6 gradient-text floating-element">
-              沉浸式AR学习体验
-            </h2>
+               沉浸式AR学习体验
+             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 data-stream">
             让知识“跃”出屏幕，让知识“飞”进AR世界
             </p>
@@ -555,8 +589,8 @@ function App() {
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold mb-6 gradient-text floating-element">
-              项目亮点
-            </h2>
+               项目亮点
+             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               与"人工智能+"创意赛赛道完美契合的创新特色
             </p>
@@ -590,8 +624,8 @@ function App() {
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold mb-6 gradient-text floating-element">
-              团队信息
-            </h2>
+               团队信息
+             </h2>
           </div>
 
           {/* 第一行：团队成员和技术支持方向 */}
@@ -790,7 +824,7 @@ function App() {
       {showScrollTop && (
         <Button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 rounded-full w-16 h-16 p-0 z-50 bg-gradient-to-br from-primary/90 to-primary/70 hover:from-primary hover:to-primary/80 border-2 border-primary/30 hover:border-primary/50 shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 backdrop-blur-sm group"
+          className="fixed bottom-8 left-8 rounded-full w-16 h-16 p-0 z-50 bg-gradient-to-br from-primary/90 to-primary/70 hover:from-primary hover:to-primary/80 border-2 border-primary/30 hover:border-primary/50 shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 backdrop-blur-sm group"
           size="icon"
         >
           <ArrowUp className="h-7 w-7 text-white group-hover:scale-110 transition-transform duration-300" />

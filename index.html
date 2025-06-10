@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -8,7 +8,25 @@
     <!-- Google Fonts for tech-inspired typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- 字体加载失败时的回退样式 -->
+     <style>
+       /* 确保背景始终为深色 */
+       html, body {
+         background-color: #0a0a0f !important;
+         color: #f8fafc !important;
+       }
+       
+       .neon-text {
+         font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+         color: #ffffff !important;
+       }
+       .gradient-text {
+         color: #ffffff !important;
+       }
+     </style>
   </head>
   <body>
     <div id="root"></div>

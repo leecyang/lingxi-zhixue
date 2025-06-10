@@ -4,40 +4,47 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // or 'media' or 'class'
+  darkMode: 'class', // 启用class策略的暗黑模式
   theme: {
     extend: {
-      colors: {
-        'background': 'var(--background)',
-        'foreground': 'var(--foreground)',
-        'card': 'var(--card)',
-        'card-foreground': 'var(--card-foreground)',
-        'popover': 'var(--popover)',
-        'popover-foreground': 'var(--popover-foreground)',
-        'primary': 'var(--primary)',
-        'primary-foreground': 'var(--primary-foreground)',
-        'secondary': 'var(--secondary)',
-        'secondary-foreground': 'var(--secondary-foreground)',
-        'muted': 'var(--muted)',
-        'muted-foreground': 'var(--muted-foreground)',
-        'accent': 'var(--accent)',
-        'accent-foreground': 'var(--accent-foreground)',
-        'destructive': 'var(--destructive)',
-        'border': 'var(--border)',
-        'input': 'var(--input)',
-        'ring': 'var(--ring)',
-        'chart-1': 'var(--chart-1)',
-        'chart-2': 'var(--chart-2)',
-        'chart-3': 'var(--chart-3)',
-        'chart-4': 'var(--chart-4)',
-        'chart-5': 'var(--chart-5)',
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      // 扩展字体大小以支持超大文字
+      fontSize: {
+        '15xl': '12rem', // 支持md:text-15xl
       },
     },
   },
+  safelist: [
+    // 保留自定义样式类，防止被tree-shaking剔除
+    'neon-text',
+    'gradient-text', 
+    'floating-element',
+    'typewriter',
+    'hologram',
+    'pulse-glow',
+    'matrix-grid',
+    'agent-card',
+    'search-box-container',
+    'glass-card',
+    'neon-border',
+    // 保留所有agent-card相关的类
+    'learning-cognitive',
+    'creative-design',
+    'analytical-research',
+    'communication-social',
+    'technical-development',
+    'business-management',
+    // 保留动画相关的类
+    'animate-pulse',
+    'animate-spin',
+    'animate-bounce',
+    // 保留暗黑模式相关的类
+    {
+      pattern: /dark:.*/,
+    },
+    // 保留所有可能动态生成的工具类
+    {
+      pattern: /(bg|text|border|ring)-(primary|secondary|accent|destructive|muted|card|popover|border|input|ring|background|foreground).*/, 
+    },
+  ],
   plugins: [],
 }

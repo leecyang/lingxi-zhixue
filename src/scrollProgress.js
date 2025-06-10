@@ -20,21 +20,8 @@ function setupScrollProgress() {
     const track = thumb.parentElement;
     const progressContainer = track.parentElement;
     
-    // 检查是否需要显示进度条
-    function checkScrollNeed() {
-      const needsScroll = scrollArea.scrollWidth > scrollArea.clientWidth;
-      if (!needsScroll) {
-        progressContainer.style.display = 'block';
-      } else {
-        progressContainer.style.display = 'none';
-      }
-      return needsScroll;
-    }
-    
-    // 初始检查
-    if (!checkScrollNeed()) {
-      return; // 如果不需要滚动，直接返回，不设置事件监听
-    }
+    // 确保进度条始终显示
+    progressContainer.style.display = 'block';
     let isDragging = false;
     let startX = 0;
     let startScrollLeft = 0;
